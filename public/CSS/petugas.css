@@ -1,0 +1,183 @@
+/* --- CSS Styling untuk Tampilan Statistik --- */
+
+/* Gaya dasar untuk setiap kartu statistik */
+.stat-card-modern {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+}
+
+/* Efek hover untuk membuat kartu lebih interaktif */
+.stat-card-modern:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Container untuk ikon statistik */
+.activity-item:hover {
+    background: var(--background);
+    border-radius: var(--border-radius-sm);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+a:hover {
+    background: var(--primary-light) !important;
+}
+/* Gaya ikon di dalam container */
+.stat-icon i {
+    font-size: 2rem;
+}
+
+/* Gaya untuk nilai angka */
+.stat-value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+/* Gaya untuk label teks */
+.stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.welcome-title {
+    font-size: 1.8rem;
+}
+.welcome-subtitle {
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.welcome-illustration {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-radius: 50%;
+    padding: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.welcome-section {
+    animation: fadeInUp 0.8s ease-in-out;
+}
+.stat-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    background-color: var(--icon-bg-color); /* Placeholder untuk warna */
+}
+
+.stat-icon i {
+    color: var(--icon-color); /* Placeholder untuk warna ikon */
+    font-size: 2rem;
+}
+
+.stat-value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Warna untuk setiap kartu */
+.stat-card.diajukan .stat-icon {
+    background-color: #e0f2fe;
+}
+.stat-card.diajukan .stat-icon i {
+    color: #0284c7;
+}
+
+.stat-card.disetujui .stat-icon {
+    background-color: #dcfce7;
+}
+.stat-card.disetujui .stat-icon i {
+    color: #22c55e;
+}
+
+.stat-card.ditolak .stat-icon {
+    background-color: #fee2e2;
+}
+.stat-card.ditolak .stat-icon i {
+    color: #ef4444;
+}
+
+.stat-card.diproses .stat-icon {
+    background-color: #fef9c3;
+}
+.stat-card.diproses .stat-icon i {
+    color: #eab308;
+}
+
+.stat-card.selesai .stat-icon {
+    background-color: #e0f2fe;
+}
+.stat-card.selesai .stat-icon i {
+    color: #0ea5e9;
+}
+
+.stat-card.total .stat-icon {
+    background-color: #e5e7eb;
+}
+.stat-card.total .stat-icon i {
+    color: #374151;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
