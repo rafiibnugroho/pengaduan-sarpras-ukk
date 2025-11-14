@@ -38,15 +38,6 @@ return new class extends Migration
             $table->foreign('id_item')->references('id_item')->on('items')->onDelete('cascade');
         });
 
-        // Temporary Item (semacam keranjang sebelum dikonfirmasi)
-        Schema::create('temporary_item', function (Blueprint $table) {
-            $table->id('id_temp');
-            $table->unsignedBigInteger('id_item');
-            $table->integer('jumlah');
-            $table->timestamps();
-
-            $table->foreign('id_item')->references('id_item')->on('items')->onDelete('cascade');
-        });
 
         // Petugas
         Schema::create('petugas', function (Blueprint $table) {

@@ -14,10 +14,10 @@ class Item extends Model
     protected $primaryKey = 'id_item';
     protected $fillable = ['nama_item','stok', 'deskripsi', 'foto'];
 
-    public function lokasi()
-    {
-        return $this->belongsToMany(Lokasi::class, 'list_lokasi', 'id_item', 'id_lokasi')
-                    ->withPivot('jumlah')
-                    ->withTimestamps();
-    }   
+   public function lokasi()
+{
+    return $this->belongsToMany(Lokasi::class, 'list_lokasi', 'id_item', 'id_lokasi')
+                ->withTimestamps(); // Hapus ->withTimestamps()
+}
+
 }

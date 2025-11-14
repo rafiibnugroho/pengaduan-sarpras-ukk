@@ -86,7 +86,7 @@
 
 <!-- Bagian kanan gambar -->
 <div class="auth-image">
-    <img src="{{ asset('images/logo.png') }}" alt="Pengaduan Sarpras" style="max-width: 200px; height: auto;">
+    <img src="{{ asset('images/logo.webp') }}" alt="Pengaduan Sarpras" style="max-width: 200px; height: auto;">
     <div style="text-align: center; color: white; margin-top: 20px; font-size: 1rem; line-height: 1.5;">
         <p>Perbaiki fasilitas dengan<br>Pengaduan Sarpras</p>
     </div>

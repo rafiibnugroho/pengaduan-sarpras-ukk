@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -83,8 +85,12 @@ class AuthController extends Controller
     ], 200);
 }
 
+
     public function logout(Request $request)
     {
+        Log::info('Logout request received', ['user' => $request->user()]);
+
+        // Hapus token saat ini
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Logout berhasil']);

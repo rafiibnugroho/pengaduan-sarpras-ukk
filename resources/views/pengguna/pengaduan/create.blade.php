@@ -3,194 +3,315 @@
 @section('title', 'Buat Pengaduan Baru - ' . config('app.name'))
 
 @section('content')
-<div class="container-fluid py-5">
-    <!-- Floating Elements -->
-    <div class="floating-element floating-1"></div>
-    <div class="floating-element floating-2"></div>
+<div class="min-vh-100 bg-light">
+    <!-- Background Elements -->
+    <div class="position-fixed w-100 h-100 top-0 start-0" style="z-index: -1;">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        <div class="floating-shape shape-4"></div>
+    </div>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-9 col-xl-8">
-            <!-- Header Section -->
-            <div class="text-center mb-5 animate-fadeInUp">
-                <h1 class="h1 fw-bold text-gradient mb-3">Buat Pengaduan Baru</h1>
-                <p class="text-muted lead fs-5">Laporkan masalah sarana dan prasarana dengan mudah dan cepat</p>
-            </div>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-12">
+                <!-- Header Section -->
+                <div class="text-center mb-6">
+                    <div class="header-icon mb-4">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                    </div>
+                    <h1 class="display-5 fw-bold text-dark mb-3">Buat Pengaduan Baru</h1>
+                    <p class="lead text-muted fs-5">Laporkan masalah dengan mudah melalui formulir yang intuitif</p>
+                </div>
 
-            <!-- Form Card -->
-            <div class="glass-card animate-fadeInUp animate-delay-1">
-                <div class="card-body p-4 p-md-5">
-                    <form action="{{ route('pengaduan.store') }}" method="POST" enctype="multipart/form-data" id="pengaduanForm">
+                <!-- Progress Steps -->
+                <div class="modern-progress mb-6">
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                        <div class="steps">
+                            <div class="step active" data-step="1">
+                                <div class="step-circle">
+                                    <span>1</span>
+                                </div>
+                                <span class="step-label">Informasi</span>
+                            </div>
+                            <div class="step" data-step="2">
+                                <div class="step-circle">
+                                    <span>2</span>
+                                </div>
+                                <span class="step-label">Lokasi</span>
+                            </div>
+                            <div class="step" data-step="3">
+                                <div class="step-circle">
+                                    <span>3</span>
+                                </div>
+                                <span class="step-label">Lampiran</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Form Card -->
+                <div class="modern-form-card">
+                    <form id="pengaduanForm" action="{{ route('pengaduan.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
-                        <!-- Step 1: Informasi Dasar -->
-                        <div class="step-content active" data-step="1">
-                            <h3 class="section-title fw-bold mb-4">Informasi Pengaduan</h3>
-
-                            <div class="mb-4">
-                                <label for="nama_pengaduan" class="form-label fw-semibold">
-                                    <i class="fas fa-heading me-2 text-primary"></i>
-                                    Judul Pengaduan
-                                </label>
-                                <input type="text"
-                                       name="nama_pengaduan"
-                                       id="nama_pengaduan"
-                                       class="form-control modern-input"
-                                       placeholder="Contoh: Kerusakan Kursi Kelas X IPA 1"
-                                       required
-                                       maxlength="100">
-                                <div class="form-text text-muted mt-2">Masukkan judul yang jelas dan deskriptif</div>
+                        <!-- Step 1: Basic Information -->
+                        <div class="form-step active" data-step="1">
+                            <div class="step-header">
+                                <h3 class="step-title">
+                                    <i class="fas fa-info-circle me-3"></i>
+                                    Informasi Pengaduan
+                                </h3>
+                                <p class="step-subtitle">Berikan detail tentang masalah yang Anda temui</p>
                             </div>
 
-                            <div class="mb-4">
-                                <label for="deskripsi" class="form-label fw-semibold">
-                                    <i class="fas fa-align-left me-2 text-primary"></i>
-                                    Deskripsi Lengkap
-                                </label>
-                                <textarea name="deskripsi"
-                                          id="deskripsi"
-                                          class="form-control modern-input"
-                                          rows="5"
-                                          placeholder="Jelaskan detail kerusakan atau masalah yang ditemukan..."
-                                          required
-                                          maxlength="500"></textarea>
-                                <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <div class="form-text text-muted">Jelaskan secara detail untuk memudahkan penanganan</div>
-                                    <small class="text-muted char-counter"><span id="charCount">0</span>/500</small>
-                                </div>
-                            </div>
-
-                        <!-- Step 2: Lokasi dan Barang -->
-                        <div class="step-content" data-step="2">
-                            <h3 class="section-title fw-bold mb-4">Lokasi & Barang</h3>
-
-                            <div class="mb-4">
-                                <label for="id_lokasi" class="form-label fw-semibold">
-                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>
-                                    Pilih Lokasi
-                                </label>
-                                <select name="id_lokasi" id="id_lokasi" class="form-select modern-select" required>
-                                    <option value="">-- Pilih Lokasi --</option>
-                                    @foreach($lokasi as $l)
-                                        <option value="{{ $l->id_lokasi }}">{{ $l->nama_lokasi }}</option>
-                                    @endforeach
-                                </select>
-                                <div class="form-text text-muted mt-2">Pilih lokasi dimana masalah terjadi</div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="id_item" class="form-label fw-semibold">
-                                    <i class="fas fa-box me-2 text-primary"></i>
-                                    Pilih Barang
-                                </label>
-                                <select name="id_item" id="id_item" class="form-select modern-select" required disabled>
-                                    <option value="">-- Pilih Barang --</option>
-                                </select>
-                                <div class="loading-spinner d-none mt-2">
-                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
-                                    <small class="text-muted">Memuat data barang...</small>
-                                </div>
-                                <div class="form-text text-muted mt-2">Pilih barang yang mengalami kerusakan</div>
-                            </div>
-
-
-                        </div>
-
-                        <!-- Step 3: Lampiran dan Submit -->
-                        <div class="step-content" data-step="3">
-                            <h3 class="section-title fw-bold mb-4">Lampiran & Pengiriman</h3>
-
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold">
-                                    <i class="fas fa-camera me-2 text-primary"></i>
-                                    Bukti Foto
-                                </label>
-
-                                <!-- File Upload Area -->
-                                <div class="file-upload-area">
-                                    <input type="file" name="foto" id="foto" class="file-input" accept="image/*" hidden>
-                                    <div class="upload-placeholder text-center p-5 border-2 border-dashed rounded-3">
-                                        <i class="fas fa-cloud-upload-alt text-muted mb-3 fa-2x"></i>
-                                        <h6 class="fw-semibold mb-2">Unggah Bukti Foto</h6>
-                                        <p class="text-muted small mb-3">Seret atau klik untuk mengunggah foto</p>
-                                        <button type="button" class="btn btn-modern btn-outline-primary btn-sm upload-trigger">
-                                            Pilih File
-                                        </button>
-                                        <div class="form-text text-muted mt-2">Format: JPG, PNG, JPEG (Maks. 5MB)</div>
+                            <div class="form-content">
+                                <!-- Judul Pengaduan -->
+                                <div class="form-group-modern">
+                                    <label class="form-label-modern">
+                                        <span class="label-text">Judul Pengaduan</span>
+                                        <span class="label-required">*</span>
+                                    </label>
+                                    <div class="input-group-modern">
+                                        <i class="input-icon fas fa-heading"></i>
+                                        <input type="text"
+                                               name="nama_pengaduan"
+                                               class="form-input-modern"
+                                               placeholder="Contoh: Kerusakan PC di Lab Komputer DKV"
+                                               required
+                                               maxlength="100">
                                     </div>
-                                    <div class="file-preview mt-3 d-none">
-                                        <div class="preview-card">
-                                            <img id="previewImage" class="preview-img">
-                                            <div class="preview-info">
-                                                <div class="preview-name fw-semibold"></div>
-                                                <div class="preview-size text-muted small"></div>
+                                    <div class="form-hint">Buat judul yang jelas dan deskriptif</div>
+                                </div>
+
+                                <!-- Deskripsi -->
+                                <div class="form-group-modern">
+                                    <label class="form-label-modern">
+                                        <span class="label-text">Deskripsi Lengkap</span>
+                                        <span class="label-required">*</span>
+                                    </label>
+                                    <div class="textarea-group-modern">
+                                        <i class="input-icon fas fa-align-left"></i>
+                                        <textarea name="deskripsi"
+                                                  class="form-textarea-modern"
+                                                  rows="5"
+                                                  placeholder="Jelaskan secara detail masalah yang ditemukan, kapan pertama kali terjadi."
+                                                  required
+                                                  maxlength="500"></textarea>
+                                        <div class="textarea-footer">
+                                            <div class="form-hint">Jelaskan dengan detail untuk memudahkan penanganan</div>
+                                            <div class="char-counter">
+                                                <span id="charCount">0</span>/500 karakter
                                             </div>
-                                            <button type="button" class="btn-remove" onclick="removeImage()">
-                                                <i class="fas fa-times"></i>
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+                            <div class="step-actions" style="display: flex; justify-content: flex-end;">
+                                <button type="button" class="btn-next" data-next="2">
+                                    Lanjut
+                                    <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
 
-                            <div class="d-flex justify-content-center">
-                                <button type="submit" class="btn btn-modern btn-success submit-btn">
+                        <!-- Step 2: Location & Item -->
+                        <div class="form-step" data-step="2">
+                            <div class="step-header">
+                                <h3 class="step-title">
+                                    <i class="fas fa-map-marker-alt me-3"></i>
+                                    Lokasi & Barang
+                                </h3>
+                                <p class="step-subtitle">Tentukan dimana masalah terjadi dan barang yang bermasalah</p>
+                            </div>
+
+                            <div class="form-content">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group-modern">
+                                            <label class="form-label-modern">
+                                                <span class="label-text">Lokasi Kejadian</span>
+                                                <span class="label-optional">(Opsional)</span>
+                                            </label>
+                                            <div class="input-group-modern">
+                                                <i class="input-icon fas fa-location-dot"></i>
+                                                <select id="id_lokasi" name="id_lokasi" class="form-select-modern">
+                                                    <option value="">Pilih lokasi atau isi manual di bawah</option>
+                                                    @foreach($lokasi as $l)
+                                                        <option value="{{ $l->id_lokasi }}">{{ $l->nama_lokasi }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-hint">Pilih lokasi dimana masalah terjadi</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group-modern">
+                                            <label class="form-label-modern">
+                                                <span class="label-text">Barang yang Bermasalah</span>
+                                                <span class="label-optional">(Opsional)</span>
+                                            </label>
+                                            <div class="input-group-modern">
+                                                <i class="input-icon fas fa-cube"></i>
+                                                <select id="id_item" name="id_item" class="form-select-modern" disabled>
+                                                    <option value="">Pilih barang atau isi manual di bawah</option>
+                                                </select>
+                                                <div class="loading-indicator">
+                                                    <div class="spinner"></div>
+                                                </div>
+                                            </div>
+                                            <div class="form-hint">Barang akan tersedia setelah memilih lokasi</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Request Baru -->
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group-modern">
+                                            <label class="form-label-modern">
+                                                <span class="label-text">Request Barang Baru</span>
+                                            </label>
+                                            <div class="input-group-modern">
+                                                <i class="input-icon fas fa-plus-circle"></i>
+                                                <input type="text" name="nama_barang_baru" class="form-input-modern" placeholder="Nama Barang Baru">
+                                            </div>
+                                            <div class="form-hint">Jika barang yang diinginkan tidak ada dalam daftar</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group-modern">
+                                            <label class="form-label-modern">
+                                                <span class="label-text">Lokasi Baru</span>
+                                            </label>
+                                            <div class="input-group-modern">
+                                                <i class="input-icon fas fa-map-marker-alt"></i>
+                                                <input type="text" name="lokasi_baru" class="form-input-modern" placeholder="Lokasi Baru">
+                                            </div>
+                                            <div class="form-hint">Jika lokasi baru untuk barang yang diminta</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-actions">
+                                <button type="button" class="btn-prev" data-prev="1">
+                                    <i class="fas fa-arrow-left me-2"></i>
+                                    Kembali
+                                </button>
+                                <button type="button" class="btn-next" data-next="3">
+                                    Lanjut
+                                    <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Attachment & Submit -->
+                        <div class="form-step" data-step="3">
+                            <div class="step-header">
+                                <h3 class="step-title">
+                                    <i class="fas fa-paperclip me-3"></i>
+                                    Lampiran & Pengiriman
+                                </h3>
+                                <p class="step-subtitle">Lampirkan bukti foto dan kirim pengaduan Anda</p>
+                            </div>
+
+                            <div class="form-content">
+                                <!-- File Upload -->
+                                <div class="form-group-modern">
+                                    <label class="form-label-modern">
+                                        <span class="label-text">Bukti Foto</span>
+                                        <span class="label-optional">(Opsional)</span>
+                                    </label>
+
+                                    <div class="file-upload-modern">
+                                        <input type="file" name="foto" id="foto" class="file-input" accept="image/*" hidden>
+                                        <div class="upload-area" id="uploadArea">
+                                            <div class="upload-content">
+                                                <i class="upload-icon fas fa-cloud-upload-alt"></i>
+                                                <h4 class="upload-title">Unggah Bukti Foto</h4>
+                                                <p class="upload-subtitle">Seret atau klik untuk memilih file</p>
+                                                <div class="upload-requirements">
+                                                    <span class="requirement">Format: JPG, PNG, JPEG</span>
+                                                    <span class="requirement">Maksimal: 5MB</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="file-preview-modern" id="filePreview">
+                                            <div class="preview-content">
+                                                <img class="preview-image" id="previewImage">
+                                                <div class="preview-info">
+                                                    <div class="preview-name" id="previewName"></div>
+                                                    <div class="preview-size" id="previewSize"></div>
+                                                </div>
+                                                <button type="button" class="btn-remove" onclick="removeFile()">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tips Section -->
+                                <div class="tips-card">
+                                    <div class="tips-header">
+                                        <i class="fas fa-lightbulb"></i>
+                                        <span>Tips Foto yang Baik</span>
+                                    </div>
+                                    <div class="tips-content">
+                                        <div class="tip-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Ambil foto dalam kondisi pencahayaan yang baik</span>
+                                        </div>
+                                        <div class="tip-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Fokus pada area yang rusak atau bermasalah</span>
+                                        </div>
+                                        <div class="tip-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Sertakan objek sekitarnya sebagai referensi</span>
+                                        </div>
+                                        <div class="tip-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Ambil dari berbagai sudut pandang jika memungkinkan</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-actions">
+                                <button type="button" class="btn-prev" data-prev="2">
+                                    <i class="fas fa-arrow-left me-2"></i>
+                                    Kembali
+                                </button>
+                                <button type="submit" class="btn-submit">
                                     <i class="fas fa-paper-plane me-2"></i>
                                     Kirim Pengaduan
                                 </button>
                             </div>
                         </div>
-                    </br>
-                        <!-- Tips Section -->
-                        <div class="alert alert-modern alert-info mb-4">
-                            <div class="d-flex">
-                                <i class="fas fa-lightbulb text-info me-3 fa-lg mt-1"></i>
-                                <div>
-                                    <h6 class="alert-title mb-2 fw-bold">Tips Foto yang Baik</h6>
-                                    <ul class="mb-0 small ps-3">
-                                        <li>Pastikan foto jelas dan terang</li>
-                                        <li>Ambil dari berbagai angle</li>
-                                        <li>Tunjukkan bagian yang rusak secara detail</li>
-                                        <li>Sertakan objek sekitar sebagai referensi</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
                     </form>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            {{--
-            <!-- Features Section -->
-            <div class="row mt-5 g-4">
-                <div class="col-md-4">
-                    <div class="feature-card animate-fadeInUp animate-delay-2">
-                        <div class="feature-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <h6 class="fw-bold mb-2">Proses Cepat</h6>
-                        <p class="text-muted small mb-0">Pengaduan akan diproses dalam waktu 24 jam</p>
-                    </div>
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modern-modal">
+            <div class="modal-body text-center p-5">
+                <div class="success-icon mb-4">
+                    <i class="fas fa-check"></i>
                 </div>
-                <div class="col-md-4">
-                    <div class="feature-card animate-fadeInUp animate-delay-3">
-                        <div class="feature-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h6 class="fw-bold mb-2">Data Aman</h6>
-                        <p class="text-muted small mb-0">Informasi Anda terlindungi dengan enkripsi</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="feature-card animate-fadeInUp animate-delay-4">
-                        <div class="feature-icon">
-                            <i class="fas fa-sync-alt"></i>
-                        </div>
-                        <h6 class="fw-bold mb-2">Update Real-time</h6>
-                        <p class="text-muted small mb-0">Pantau status pengaduan secara langsung</p>
-                    </div>
-                </div>
-                --}}
+                <h4 class="modal-title mb-3">Pengaduan Berhasil Dikirim!</h4>
+                <p class="text-muted mb-4">Pengaduan Anda telah berhasil direkam dan akan segera diproses oleh tim terkait.</p>
+                <button type="button" class="btn-modal" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -199,604 +320,890 @@
 
 @push('styles')
 <style>
-    :root {
-        --primary: #6366f1;
-        --primary-light: #818cf8;
-        --primary-dark: #4f46e5;
-        --secondary: #10b981;
-        --accent: #f59e0b;
-        --dark: #1e293b;
-        --light: #f8fafc;
-        --gray: #64748b;
-        --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        --gradient-light: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
-        --shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-        --shadow-lg: 0 25px 50px rgba(0, 0, 0, 0.12);
-        --radius: 16px;
-        --radius-lg: 24px;
+/* Modern Design System */
+:root {
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+    --secondary: #10b981;
+    --accent: #f59e0b;
+    --danger: #ef4444;
+    --dark: #1e293b;
+    --light: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --radius: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+}
+
+/* Background Elements */
+.floating-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    opacity: 0.03;
+    animation: float 20s ease-in-out infinite;
+}
+
+.shape-1 {
+    width: 300px;
+    height: 300px;
+    top: 10%;
+    left: 5%;
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    width: 200px;
+    height: 200px;
+    top: 60%;
+    right: 10%;
+    animation-delay: 5s;
+}
+
+.shape-3 {
+    width: 150px;
+    height: 150px;
+    bottom: 20%;
+    left: 15%;
+    animation-delay: 10s;
+}
+
+.shape-4 {
+    width: 250px;
+    height: 250px;
+    top: 20%;
+    right: 15%;
+    animation-delay: 15s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-30px) rotate(180deg); }
+}
+
+/* Header Section */
+.header-icon {
+    display: flex;
+    justify-content: center;
+}
+
+.icon-wrapper {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-xl);
+    position: relative;
+}
+
+.icon-wrapper::before {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.1);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.icon-wrapper i {
+    font-size: 2.5rem;
+    color: white;
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(0.8); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.5; }
+}
+
+/* Progress Steps */
+.modern-progress {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.progress-container {
+    position: relative;
+    padding: 0 80px;
+}
+
+.progress-bar {
+    position: absolute;
+    top: 25px;
+    left: 80px;
+    right: 80px;
+    height: 4px;
+    background: var(--gray-200);
+    border-radius: 2px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transition: width 0.6s ease;
+    border-radius: 2px;
+}
+
+.steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.step-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--gray-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--gray-400);
+    transition: all 0.4s ease;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+}
+
+.step.active .step-circle {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+.step.completed .step-circle {
+    border-color: var(--secondary);
+    background: var(--secondary);
+    color: white;
+}
+
+.step.completed .step-circle::after {
+    content: '✓';
+    font-weight: bold;
+}
+
+.step-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-400);
+    transition: all 0.3s ease;
+}
+
+.step.active .step-label {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* Main Form Card */
+.modern-form-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    margin-bottom: 3rem;
+}
+
+/* Form Steps */
+.form-step {
+    display: none;
+    padding: 3rem;
+    animation: slideIn 0.5s ease;
+}
+
+.form-step.active {
+    display: block;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Step Header */
+.step-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.step-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step-title i {
+    color: var(--primary);
+}
+
+.step-subtitle {
+    color: var(--gray-500);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Form Elements */
+.form-group-modern {
+    margin-bottom: 2rem;
+}
+
+.form-label-modern {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.label-text {
+    font-size: 1rem;
+}
+
+.label-required {
+    color: var(--danger);
+    margin-left: 4px;
+}
+
+.label-optional {
+    color: var(--gray-400);
+    margin-left: 4px;
+    font-weight: 400;
+}
+
+.input-group-modern, .textarea-group-modern {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.form-input-modern, .form-select-modern, .form-textarea-modern {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius);
+    background: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.form-textarea-modern {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-input-modern:focus, .form-select-modern:focus, .form-textarea-modern:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.form-input-modern:focus + .input-icon,
+.form-select-modern:focus + .input-icon,
+.form-textarea-modern:focus + .input-icon {
+    color: var(--primary);
+}
+
+.textarea-group-modern .input-icon {
+    top: 1.5rem;
+    transform: none;
+}
+
+.textarea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.char-counter {
+    font-size: 0.875rem;
+    color: var(--gray-400);
+    font-weight: 600;
+}
+
+.form-hint {
+    font-size: 0.875rem;
+    color: var(--gray-400);
+    margin-top: 0.5rem;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+}
+
+.loading-indicator.active {
+    display: block;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--gray-200);
+    border-top: 2px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* File Upload Modern - PERBAIKAN UTAMA */
+.file-upload-modern {
+    position: relative;
+    width: 100%;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2rem;
+    text-align: center;
+    background: var(--gray-100);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    display: block;
+}
+
+.upload-area:hover {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.02);
+}
+
+.upload-area.dragover {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+    transform: scale(1.02);
+}
+
+.upload-content {
+    pointer-events: none;
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: var(--gray-400);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover .upload-icon {
+    color: var(--primary);
+    transform: translateY(-5px);
+}
+
+.upload-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+}
+
+.upload-subtitle {
+    color: var(--gray-500);
+    margin-bottom: 1.5rem;
+}
+
+.upload-requirements {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.requirement {
+    font-size: 0.875rem;
+    color: var(--gray-400);
+    padding: 0.25rem 0.75rem;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--gray-200);
+}
+
+.file-preview-modern {
+    display: none;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.preview-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: white;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.preview-content:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.preview-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.preview-info {
+    flex: 1;
+}
+
+.preview-name {
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 0.25rem;
+}
+
+.preview-size {
+    font-size: 0.875rem;
+    color: var(--gray-400);
+}
+
+.btn-remove {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: var(--gray-100);
+    border-radius: var(--radius);
+    color: var(--gray-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-remove:hover {
+    background: var(--danger);
+    color: white;
+    transform: rotate(90deg);
+}
+
+/* Tips Card */
+.tips-card {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border: 1px solid #bae6fd;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.tips-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.tips-header i {
+    color: var(--accent);
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+}
+
+.tip-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    color: var(--gray-600);
+}
+
+.tip-item i {
+    color: var(--secondary);
+    margin-right: 0.75rem;
+    font-size: 0.875rem;
+}
+
+.tip-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Step Actions */
+.step-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.btn-prev, .btn-next, .btn-submit {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-prev {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.btn-prev:hover {
+    background: var(--gray-200);
+    transform: translateX(-2px);
+}
+
+.btn-next {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-next:hover {
+    background: var(--primary-dark);
+    transform: translateX(2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, var(--secondary), #059669);
+    color: white;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Success Modal */
+.modern-modal {
+    border: none;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--secondary), #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.success-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.btn-modal {
+    padding: 0.75rem 2rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-modal:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
     }
 
-    body {
-        background: linear-gradient(135deg, #f0f4ff 0%, #f8faff 100%);
-        min-height: 100vh;
-        font-family: 'Inter', sans-serif;
+    .modern-form-card {
+        margin: 0 -1rem;
+        border-radius: 0;
     }
 
-    .glass-card {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(20px);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    .form-step {
+        padding: 2rem 1.5rem;
     }
 
-    .glass-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--shadow-lg);
+    .progress-container {
+        padding: 0 40px;
     }
 
-    .text-gradient {
-        background: var(--gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+    .progress-bar {
+        left: 40px;
+        right: 40px;
     }
 
-    .btn-modern {
-        background: var(--gradient);
-        border: none;
-        border-radius: 12px;
-        padding: 14px 32px;
-        font-weight: 600;
-        color: white;
-        transition: all 0.3s ease;
-        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
-        display: inline-flex;
-        align-items: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn-modern::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s;
-    }
-
-    .btn-modern:hover::before {
-        left: 100%;
-    }
-
-    .btn-modern:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
-        color: white;
-    }
-
-    .btn-modern.btn-secondary {
-        background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
-        box-shadow: 0 6px 20px rgba(100, 116, 139, 0.3);
-    }
-
-    .btn-modern.btn-secondary:hover {
-        box-shadow: 0 10px 25px rgba(100, 116, 139, 0.4);
-    }
-
-    .btn-modern.btn-success {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
-    }
-
-    .btn-modern.btn-success:hover {
-        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
-    }
-
-    .btn-modern.btn-outline-primary {
-        background: transparent;
-        border: 2px solid var(--primary);
-        color: var(--primary);
-        box-shadow: none;
-    }
-
-    .btn-modern.btn-outline-primary:hover {
-        background: var(--primary);
-        color: white;
-    }
-
-    .modern-input, .modern-select {
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 16px 20px;
-        font-size: 15px;
-        transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.8);
-    }
-
-    .modern-input:focus, .modern-select:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
-        background: white;
-    }
-
-    .step-indicator {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 50px;
-        position: relative;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .step-indicator::before {
-        content: '';
-        position: absolute;
-        top: 24px;
-        left: 0;
-        right: 0;
-        height: 6px;
-        background: #f1f5f9;
-        z-index: 1;
-        border-radius: 3px;
-    }
-
-
-
-    .step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        z-index: 3;
-    }
-
-    .step-number {
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
-        background: white;
-        border: 4px solid #e2e8f0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        margin-bottom: 12px;
-        transition: all 0.4s ease;
-        color: var(--gray);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
-        font-size: 18px;
-    }
-
-    .step.active .step-number {
-        background: var(--primary);
-        border-color: var(--primary);
-        color: white;
-        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
-        transform: scale(1.1);
-    }
-
-    .step.completed .step-number {
-        background: var(--secondary);
-        border-color: var(--secondary);
-        color: white;
-        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-    }
-
-    .step.completed .step-number::after {
-        content: '✓';
-        font-weight: bold;
+    .step-circle {
+        width: 40px;
+        height: 40px;
     }
 
     .step-label {
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--gray);
-        transition: all 0.3s ease;
-        text-align: center;
+        font-size: 0.75rem;
     }
 
-    .step.active .step-label, .step.completed .step-label {
-        color: var(--primary);
-        font-weight: 700;
+    .step-actions {
+        flex-direction: column;
+        gap: 1rem;
     }
 
-    .step-content {
-        display: none;
-        animation: fadeInSlide 0.5s ease forwards;
-    }
-
-    .step-content.active {
-        display: block;
-    }
-
-    @keyframes fadeInSlide {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .file-upload-area {
-        position: relative;
-    }
-
-    .upload-placeholder {
-        background: rgba(248, 250, 252, 0.8);
-        border: 2px dashed #c7d2fe;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        padding: 50px 20px;
-        text-align: center;
-    }
-
-    .upload-placeholder:hover {
-        border-color: var(--primary);
-        background: rgba(99, 102, 241, 0.03);
-        transform: scale(1.01);
-    }
-
-    .upload-placeholder.dragover {
-        border-color: var(--primary);
-        background: rgba(99, 102, 241, 0.05);
-        transform: scale(1.02);
-    }
-
-    .file-preview .preview-card {
-        display: flex;
-        align-items: center;
-        background: white;
-        padding: 20px;
-        border-radius: 16px;
-        border: 2px solid #e2e8f0;
-        gap: 16px;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
-    }
-
-    .file-preview .preview-card:hover {
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    .preview-img {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .preview-info {
-        flex: 1;
-    }
-
-    .btn-remove {
-        background: none;
-        border: none;
-        color: #94a3b8;
-        padding: 10px;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
+    .btn-prev, .btn-next, .btn-submit {
+        width: 100%;
         justify-content: center;
     }
 
-    .btn-remove:hover {
-        background: #fef2f2;
-        color: #ef4444;
-        transform: rotate(90deg);
+    .upload-area {
+        padding: 2rem 1rem;
     }
 
-    .alert-modern {
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(99, 102, 241, 0.2);
-        border-radius: 16px;
-        backdrop-filter: blur(10px);
-        border-left: 5px solid var(--primary-light);
-        padding: 20px;
+    .upload-requirements {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
-    .feature-card {
+    .preview-content {
+        flex-direction: column;
         text-align: center;
-        padding: 25px 20px;
-        border-radius: 16px;
-        transition: all 0.4s ease;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .step-title {
+        font-size: 1.5rem;
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
-    .feature-card:hover {
-        transform: translateY(-8px);
-        background: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    .form-input-modern, .form-select-modern, .form-textarea-modern {
+        padding-left: 2.5rem;
     }
 
-    .feature-icon {
-        width: 70px;
-        height: 70px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 20px;
-        margin: 0 auto 20px;
-        background: var(--gradient);
-        color: white;
-        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
-        transition: all 0.3s ease;
+    .input-icon {
+        left: 0.75rem;
     }
-
-    .feature-card:hover .feature-icon {
-        transform: scale(1.1) rotate(5deg);
-        box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4);
-    }
-
-    .feature-icon i {
-        font-size: 28px;
-    }
-
-    .animate-fadeInUp {
-        animation: fadeInUp 0.8s ease;
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(40px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .animate-delay-1 {
-        animation-delay: 0.2s;
-    }
-
-    .animate-delay-2 {
-        animation-delay: 0.4s;
-    }
-
-    .animate-delay-3 {
-        animation-delay: 0.6s;
-    }
-
-    .char-counter {
-        font-size: 0.875rem;
-        font-weight: 600;
-    }
-
-    .loading-spinner {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .spinner-border {
-        width: 1.2rem;
-        height: 1.2rem;
-    }
-
-    .section-title {
-        position: relative;
-        display: inline-block;
-        margin-bottom: 20px;
-    }
-
-    .section-title::after {
-        content: '';
-        position: absolute;
-        bottom: -8px;
-        left: 0;
-        width: 50px;
-        height: 4px;
-        background: var(--gradient);
-        border-radius: 2px;
-    }
-
-    /* Floating Elements */
-    .floating-element {
-        position: absolute;
-        border-radius: 50%;
-        background: var(--gradient-light);
-        opacity: 0.1;
-        z-index: -1;
-    }
-
-    .floating-1 {
-        width: 200px;
-        height: 200px;
-        top: 10%;
-        right: 5%;
-        animation: float 15s ease-in-out infinite;
-    }
-
-    .floating-2 {
-        width: 150px;
-        height: 150px;
-        bottom: 15%;
-        left: 5%;
-        animation: float 18s ease-in-out infinite reverse;
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0) rotate(0deg); }
-        50% { transform: translateY(-20px) rotate(180deg); }
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .step-indicator {
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .step {
-            flex-direction: row;
-            gap: 15px;
-            width: 100%;
-        }
-
-        .step-indicator::before {
-            display: none;
-        }
-
-        .progress-line {
-            display: none;
-        }
-
-        .step-number {
-            margin-bottom: 0;
-        }
-
-        .glass-card .card-body {
-            padding: 1.5rem;
-        }
-
-        .floating-element {
-            display: none;
-        }
-    }
+}
 </style>
 @endpush
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Character counter for description
-        const descTextarea = document.getElementById('deskripsi');
-        const charCount = document.getElementById('charCount');
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize variables
+    const formSteps = document.querySelectorAll('.form-step');
+    const progressSteps = document.querySelectorAll('.step');
+    const progressBar = document.getElementById('progressBar');
+    let currentStep = 1;
 
+    // Character counter
+    const descTextarea = document.querySelector('textarea[name="deskripsi"]');
+    const charCount = document.getElementById('charCount');
+
+    if (descTextarea && charCount) {
         descTextarea.addEventListener('input', function() {
             charCount.textContent = this.value.length;
         });
+    }
 
-        // Step navigation
-        const stepContents = document.querySelectorAll('.step-content');
-        const steps = document.querySelectorAll('.step');
-        const progressLine = document.querySelector('.progress-line');
+    // Step navigation functions
+    function showStep(stepNumber) {
+        // Hide all steps
+        formSteps.forEach(step => step.classList.remove('active'));
 
-        function goToStep(stepNumber) {
-            // Update step contents
-            stepContents.forEach(content => {
-                content.classList.remove('active');
-                if (content.dataset.step == stepNumber) {
-                    content.classList.add('active');
-                }
-            });
-
-            // Update step indicators
-            steps.forEach(step => {
-                step.classList.remove('active', 'completed');
-
-                if (parseInt(step.dataset.step) < stepNumber) {
-                    step.classList.add('completed');
-                } else if (parseInt(step.dataset.step) == stepNumber) {
-                    step.classList.add('active');
-                }
-            });
-
-            // Update progress line
-            const progressWidth = ((stepNumber - 1) / 2) * 100;
-            progressLine.style.width = `${progressWidth}%`;
+        // Show current step
+        const currentStepElement = document.querySelector(`.form-step[data-step="${stepNumber}"]`);
+        if (currentStepElement) {
+            currentStepElement.classList.add('active');
         }
 
-        // Next step buttons
-        document.querySelectorAll('.next-step').forEach(button => {
-            button.addEventListener('click', function() {
-                const nextStep = this.dataset.next;
-
-                // Validate current step before proceeding
-                if (validateStep(parseInt(nextStep) - 1)) {
-                    goToStep(parseInt(nextStep));
-                }
-            });
-        });
-
-        // Previous step buttons
-        document.querySelectorAll('.prev-step').forEach(button => {
-            button.addEventListener('click', function() {
-                const prevStep = this.dataset.prev;
-                goToStep(parseInt(prevStep));
-            });
-        });
-
-        // Step validation
-        function validateStep(stepNumber) {
-            let isValid = true;
-
-            if (stepNumber === 1) {
-                const judul = document.getElementById('nama_pengaduan').value.trim();
-                const deskripsi = document.getElementById('deskripsi').value.trim();
-
-                if (!judul) {
-                    showValidationError('Judul pengaduan harus diisi');
-                    isValid = false;
-                } else if (!deskripsi) {
-                    showValidationError('Deskripsi pengaduan harus diisi');
-                    isValid = false;
-                }
+        // Update progress steps
+        progressSteps.forEach((step, index) => {
+            step.classList.remove('active', 'completed');
+            if (index + 1 < stepNumber) {
+                step.classList.add('completed');
+            } else if (index + 1 === stepNumber) {
+                step.classList.add('active');
             }
+        });
 
-            return isValid;
+        // Update progress bar
+        const progressPercentage = ((stepNumber - 1) / (formSteps.length - 1)) * 100;
+        if (progressBar) {
+            progressBar.style.width = `${progressPercentage}%`;
         }
 
-        function showValidationError(message) {
-            // Create toast notification
-            const toast = document.createElement('div');
-            toast.className = 'position-fixed top-0 end-0 p-3';
-            toast.style.zIndex = '9999';
-            toast.innerHTML = `
-                <div class="toast show" role="alert">
-                    <div class="toast-header bg-danger text-white">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <strong class="me-auto">Validasi Gagal</strong>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-                    </div>
-                    <div class="toast-body">
-                        ${message}
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(toast);
+        currentStep = stepNumber;
+    }
 
-            // Remove toast after 5 seconds
-            setTimeout(() => {
-                toast.remove();
-            }, 5000);
+    // Next step buttons
+    document.querySelectorAll('.btn-next').forEach(button => {
+        button.addEventListener('click', function() {
+            const nextStep = parseInt(this.dataset.next);
+
+            if (validateStep(currentStep)) {
+                showStep(nextStep);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+    });
+
+    // Previous step buttons
+    document.querySelectorAll('.btn-prev').forEach(button => {
+        button.addEventListener('click', function() {
+            const prevStep = parseInt(this.dataset.prev);
+            showStep(prevStep);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+
+    // Step validation
+    function validateStep(stepNumber) {
+        let isValid = true;
+        let errorMessage = '';
+
+        switch(stepNumber) {
+            case 1:
+                const judul = document.querySelector('input[name="nama_pengaduan"]');
+                const deskripsi = document.querySelector('textarea[name="deskripsi"]');
+
+                if (!judul || !judul.value.trim()) {
+                    errorMessage = 'Judul pengaduan harus diisi';
+                    isValid = false;
+                } else if (judul.value.trim().length < 5) {
+                    errorMessage = 'Judul pengaduan terlalu pendek (minimal 5 karakter)';
+                    isValid = false;
+                } else if (!deskripsi || !deskripsi.value.trim()) {
+                    errorMessage = 'Deskripsi pengaduan harus diisi';
+                    isValid = false;
+                } else if (deskripsi.value.trim().length < 10) {
+                    errorMessage = 'Deskripsi terlalu pendek (minimal 10 karakter)';
+                    isValid = false;
+                }
+                break;
+
+            case 2:
+                const lokasi = document.querySelector('select[name="id_lokasi"]');
+                const item = document.querySelector('select[name="id_item"]');
+                const lokasiBaru = document.querySelector('input[name="lokasi_baru"]');
+                const barangBaru = document.querySelector('input[name="nama_barang_baru"]');
+
+                if ((!lokasi || !lokasi.value) && (!lokasiBaru || !lokasiBaru.value.trim() || !barangBaru || !barangBaru.value.trim())) {
+                    errorMessage = 'Harap pilih lokasi kejadian atau isi Lokasi Baru dan Barang Baru';
+                    isValid = false;
+                } else if ((!item || !item.value) && (!lokasiBaru || !lokasiBaru.value.trim() || !barangBaru || !barangBaru.value.trim())) {
+                    errorMessage = 'Harap pilih barang yang bermasalah atau isi Barang Baru';
+                    isValid = false;
+                }
+                break;
         }
 
-        // File upload functionality
-        const fileInput = document.getElementById('foto');
-        const uploadPlaceholder = document.querySelector('.upload-placeholder');
-        const filePreview = document.querySelector('.file-preview');
-        const previewImage = document.getElementById('previewImage');
-        const previewName = document.querySelector('.preview-name');
-        const previewSize = document.querySelector('.preview-size');
-        const uploadTrigger = document.querySelector('.upload-trigger');
+        if (!isValid) {
+            showToast(errorMessage, 'error');
+        }
 
-        // Trigger file input
-        uploadTrigger.addEventListener('click', () => fileInput.click());
-        uploadPlaceholder.addEventListener('click', () => fileInput.click());
+        return isValid;
+    }
+
+    // File upload functionality - PERBAIKAN UTAMA
+    const fileInput = document.getElementById('foto');
+    const uploadArea = document.getElementById('uploadArea');
+    const filePreview = document.getElementById('filePreview');
+    const previewImage = document.getElementById('previewImage');
+    const previewName = document.getElementById('previewName');
+    const previewSize = document.getElementById('previewSize');
+
+    if (fileInput && uploadArea) {
+        // Click to upload
+        uploadArea.addEventListener('click', () => fileInput.click());
 
         // Drag and drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadPlaceholder.addEventListener(eventName, preventDefaults, false);
+            uploadArea.addEventListener(eventName, preventDefaults, false);
         });
 
         function preventDefaults(e) {
@@ -805,59 +1212,50 @@
         }
 
         ['dragenter', 'dragover'].forEach(eventName => {
-            uploadPlaceholder.addEventListener(eventName, highlight, false);
+            uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
         });
 
         ['dragleave', 'drop'].forEach(eventName => {
-            uploadPlaceholder.addEventListener(eventName, unhighlight, false);
+            uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
         });
 
-        function highlight() {
-            uploadPlaceholder.classList.add('dragover');
-        }
-
-        function unhighlight() {
-            uploadPlaceholder.classList.remove('dragover');
-        }
-
-        uploadPlaceholder.addEventListener('drop', handleDrop, false);
+        uploadArea.addEventListener('drop', handleDrop, false);
 
         function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
+            const files = e.dataTransfer.files;
             fileInput.files = files;
-            handleFiles(files);
+            handleFileSelect(files);
         }
 
         // File input change
         fileInput.addEventListener('change', function() {
-            handleFiles(this.files);
+            handleFileSelect(this.files);
         });
 
-        function handleFiles(files) {
+        function handleFileSelect(files) {
             if (files.length > 0) {
                 const file = files[0];
 
                 // Validate file type
                 if (!file.type.match('image.*')) {
-                    showValidationError('Harap pilih file gambar yang valid (JPG, PNG, JPEG)');
+                    showToast('Harap pilih file gambar yang valid (JPG, PNG, JPEG)', 'error');
                     return;
                 }
 
                 // Validate file size (5MB)
                 if (file.size > 5 * 1024 * 1024) {
-                    showValidationError('Ukuran file maksimal 5MB');
+                    showToast('Ukuran file maksimal 5MB', 'error');
                     return;
                 }
 
                 // Show preview
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    previewName.textContent = file.name;
-                    previewSize.textContent = formatFileSize(file.size);
-                    filePreview.classList.remove('d-none');
-                    uploadPlaceholder.style.display = 'none';
+                    if (previewImage) previewImage.src = e.target.result;
+                    if (previewName) previewName.textContent = file.name;
+                    if (previewSize) previewSize.textContent = formatFileSize(file.size);
+                    if (filePreview) filePreview.style.display = 'block';
+                    if (uploadArea) uploadArea.style.display = 'none';
                 };
                 reader.readAsDataURL(file);
             }
@@ -870,32 +1268,34 @@
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
+    }
 
-        // Remove image
-        window.removeImage = function() {
-            fileInput.value = '';
-            filePreview.classList.add('d-none');
-            uploadPlaceholder.style.display = 'block';
-        };
+    // Remove file function - dibuat global
+    window.removeFile = function() {
+        if (fileInput) fileInput.value = '';
+        if (filePreview) filePreview.style.display = 'none';
+        if (uploadArea) uploadArea.style.display = 'block';
+    };
 
-        // Dynamic item loading based on location
-        const lokasiSelect = document.getElementById('id_lokasi');
-        const itemSelect = document.getElementById('id_item');
-        const loadingSpinner = document.querySelector('.loading-spinner');
+    // Dynamic item loading
+    const lokasiSelect = document.querySelector('select[name="id_lokasi"]');
+    const itemSelect = document.querySelector('select[name="id_item"]');
+    const loadingIndicator = document.querySelector('.loading-indicator');
 
+    if (lokasiSelect && itemSelect && loadingIndicator) {
         lokasiSelect.addEventListener('change', function() {
             const lokasiId = this.value;
 
             if (!lokasiId) {
-                itemSelect.innerHTML = '<option value="">-- Pilih Barang --</option>';
+                itemSelect.innerHTML = '<option value="">Pilih barang...</option>';
                 itemSelect.disabled = true;
                 return;
             }
 
             // Show loading
-            loadingSpinner.classList.remove('d-none');
+            loadingIndicator.classList.add('active');
             itemSelect.disabled = true;
-            itemSelect.innerHTML = '<option value="">Memuat data...</option>';
+            itemSelect.innerHTML = '<option value="">Memuat data barang...</option>';
 
             // Fetch items based on selected location
             fetch(`/get-items/${lokasiId}`)
@@ -906,7 +1306,7 @@
                     return response.json();
                 })
                 .then(data => {
-                    itemSelect.innerHTML = '<option value="">-- Pilih Barang --</option>';
+                    itemSelect.innerHTML = '<option value="">Pilih barang...</option>';
                     data.forEach(item => {
                         itemSelect.innerHTML += `<option value="${item.id_item}">${item.nama_item}</option>`;
                     });
@@ -915,33 +1315,85 @@
                 .catch(error => {
                     console.error('Error:', error);
                     itemSelect.innerHTML = '<option value="">Gagal memuat data</option>';
+                    showToast('Gagal memuat data barang', 'error');
                 })
                 .finally(() => {
-                    loadingSpinner.classList.add('d-none');
+                    loadingIndicator.classList.remove('active');
                 });
         });
+    }
 
-        // Form validation before submit
-        document.getElementById('pengaduanForm').addEventListener('submit', function(e) {
+    // Form submission
+    const pengaduanForm = document.getElementById('pengaduanForm');
+    if (pengaduanForm) {
+        pengaduanForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
             // Validate all steps
-            if (!validateStep(1) || !validateStep(2) || !validateStep(3)) {
-                showValidationError('Harap lengkapi semua data yang diperlukan');
+            let formValid = true;
+            for (let i = 1; i <= 3; i++) {
+                if (!validateStep(i)) {
+                    formValid = false;
+                    showStep(i); // Go to the step with error
+                    break;
+                }
+            }
+
+            if (!formValid) {
+                showToast('Harap lengkapi semua data yang diperlukan', 'error');
                 return;
             }
 
-            // Add loading state to submit button
-            const submitBtn = document.querySelector('.submit-btn');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<div class="spinner-border spinner-border-sm me-2"></div> Mengirim...';
-            submitBtn.disabled = true;
+            // Add loading state
+            const submitBtn = document.querySelector('.btn-submit');
+            if (submitBtn) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<div class="spinner"></div> Mengirim...';
+                submitBtn.disabled = true;
 
-            // Submit form after short delay to show loading state
-            setTimeout(() => {
+                // Submit form
+                setTimeout(() => {
+                    this.submit();
+                }, 2000);
+            } else {
                 this.submit();
-            }, 1500);
+            }
         });
-    });
+    }
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `position-fixed top-0 end-0 p-3`;
+        toast.style.zIndex = '9999';
+
+        const bgColor = type === 'error' ? 'bg-danger' : 'bg-primary';
+
+        toast.innerHTML = `
+            <div class="toast show" role="alert">
+                <div class="toast-header ${bgColor} text-white">
+                    <i class="fas ${type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'} me-2"></i>
+                    <strong class="me-auto">${type === 'error' ? 'Error' : 'Info'}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(toast);
+
+        // Remove toast after 5 seconds
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 5000);
+    }
+
+    // Initialize first step
+    showStep(1);
+});
 </script>
 @endpush

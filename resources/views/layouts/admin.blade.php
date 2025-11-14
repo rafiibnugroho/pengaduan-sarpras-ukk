@@ -6,12 +6,20 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard Admin')</title>
 
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- Tambahan CSS dari child view --}}
+    @stack('styles')
 
     <style>
         :root {
@@ -27,7 +35,8 @@
             --text-primary: #0f172a;
             --text-secondary: #64748b;
             --sidebar-width: 280px;
-            --navbar-height: 70px;
+            --sidebar-width-collapsed: 80px;
+            --header-height: 70px;
         }
 
         * {
@@ -36,33 +45,16 @@
             box-sizing: border-box;
         }
 
+        html {
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--light-gray);
             color: var(--text-primary);
             line-height: 1.6;
-        }
-
-        <style>
-        :root {
-            --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary-color: #64748b;
-            --success-color: #059669;
-            --warning-color: #d97706;
-            --danger-color: #dc2626;
-            --light-gray: #f8fafc;
-            --medium-gray: #e2e8f0;
-            --dark-gray: #475569;
-            --text-primary: #0f172a;
-            --text-secondary: #64748b;
-            --sidebar-width: 280px;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--light-gray);
-            color: var(--text-primary);
+            overflow-x: hidden;
         }
 
         /* Sidebar */
@@ -75,14 +67,29 @@
             background: white;
             border-right: 1px solid var(--medium-gray);
             overflow-y: auto;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
         }
 
+        .sidebar.collapsed {
+            width: var(--sidebar-width-collapsed);
+        }
+
+        /* Header Sidebar */
         .sidebar-header {
             padding: 1.5rem;
             border-bottom: 1px solid var(--medium-gray);
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: var(--header-height);
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            padding: 1.5rem 0.75rem;
+            justify-content: center;
         }
 
         .sidebar-header .logo {
@@ -96,20 +103,102 @@
             color: white;
             font-weight: 600;
             font-size: 1.25rem;
+            flex-shrink: 0;
         }
 
         .sidebar-header .brand {
             font-size: 1.25rem;
             font-weight: 600;
             color: var(--text-primary);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 1;
+            transform: translateX(0);
         }
 
+        .sidebar.collapsed .brand {
+            opacity: 0;
+            transform: translateX(-10px);
+            width: 0;
+            overflow: hidden;
+        }
+
+        /* Hamburger Menu */
+        .sidebar-hamburger {
+            padding: 0 1.5rem 1rem;
+            border-bottom: 1px solid var(--medium-gray);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed .sidebar-hamburger {
+            padding: 0 0.75rem 1rem;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .sidebar.collapsed .hamburger-btn {
+            justify-content: center;
+            padding: 0.75rem;
+        }
+
+        .hamburger-btn:hover {
+            background-color: var(--light-gray);
+            color: var(--primary-color);
+            transform: translateX(3px);
+        }
+
+        .hamburger-icon {
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .hamburger-btn:hover .hamburger-icon {
+            transform: scale(1.1);
+        }
+
+        .hamburger-text {
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .sidebar.collapsed .hamburger-text {
+            opacity: 0;
+            transform: translateX(-10px);
+            width: 0;
+            overflow: hidden;
+        }
+
+        /* Navigation */
         .sidebar-nav {
             padding: 1rem 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-item {
             margin: 0 1rem 0.25rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed .nav-item {
+            margin: 0 0.5rem 0.25rem;
         }
 
         .nav-link {
@@ -119,140 +208,145 @@
             color: var(--text-secondary);
             text-decoration: none;
             border-radius: 8px;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 500;
             gap: 0.75rem;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .nav-link {
+            padding: 0.75rem;
+            justify-content: center;
         }
 
         .nav-link:hover {
             background-color: var(--light-gray);
             color: var(--primary-color);
+            transform: translateX(5px);
         }
 
         .nav-link.active {
             background-color: var(--primary-color);
             color: white;
+            transform: translateX(0);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .nav-link.active:hover {
+            background-color: var(--primary-dark);
+            transform: translateX(5px);
         }
 
         .nav-link i {
             width: 20px;
             text-align: center;
             font-size: 1.1rem;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
         }
 
-        .navbar-brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 20px; color: var(--text-dark) !important; text-decoration: none; }
-        .navbar-brand img {
-            height: 24px;
-            width: auto;
-            max-height: 32px;
+        .nav-link:hover i {
+            transform: scale(1.1);
         }
 
-        /* Logout */
-        .logout-btn {
-            background: var(--danger-color);
+        .nav-link span {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .sidebar.collapsed .nav-link span {
+            opacity: 0;
+            transform: translateX(-10px);
+            width: 0;
+            overflow: hidden;
+        }
+
+        /* Tooltip untuk sidebar collapsed */
+        .nav-link::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%) translateX(-10px);
+            background: var(--text-primary);
             color: white;
-            border: none;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            font-weight: 500;
-            width: 100%;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin: 1rem 0;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            pointer-events: none;
         }
 
-        .logout-btn:hover {
-            background: #b91c1c;
+        .sidebar.collapsed .nav-link:hover::after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(-50%) translateX(10px);
         }
 
         /* Main Content */
         .main-content {
             margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
             min-height: 100vh;
-            transition: margin-left 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: var(--light-gray);
         }
 
         .sidebar.collapsed + .main-content {
-            margin-left: 80px;
-        }
-
-        /* Top Navigation */
-        .top-navbar {
-            background: transparent;   /* jadi bening */
-            border-bottom: none;       /* hilangkan garis bawah */
-            padding: 0 2rem;
-            height: 5vh;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(255,255,255,0.3); /* putih transparan */
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid rgba(255,255,255,0.2);
-
-            backdrop-filter: blur(8px); /* efek blur kaca (opsional, bikin aesthetic) */
-        }
-
-
-        .navbar-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .sidebar-toggle {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .sidebar-toggle:hover {
-            background-color: var(--light-gray);
-            color: var(--primary-color);
-        }
-
-        .page-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0;
-        }
-
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-menu {
-            position: relative;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
+            margin-left: var(--sidebar-width-collapsed);
+            width: calc(100% - var(--sidebar-width-collapsed));
         }
 
         /* Content Area */
         .content-area {
             padding: 2rem;
+            min-height: 100vh;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            background: white;
+            border-bottom: 1px solid var(--medium-gray);
+            padding: 0 1rem;
+            z-index: 999;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mobile-header .brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .mobile-hamburger {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-hamburger:hover {
+            background-color: var(--light-gray);
+            color: var(--primary-color);
         }
 
         /* Cards */
@@ -261,7 +355,7 @@
             border-radius: 12px;
             padding: 1.5rem;
             border: 1px solid var(--medium-gray);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             height: 100%;
         }
 
@@ -270,89 +364,152 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
-        .stat-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: between;
-            margin-bottom: 1rem;
+        /* Mobile Overlay dengan animasi smooth */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .stat-card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+        .mobile-overlay.active {
+            display: block;
+            opacity: 1;
         }
 
-        .stat-card-icon.primary { background: var(--primary-color); }
-        .stat-card-icon.success { background: var(--success-color); }
-        .stat-card-icon.warning { background: var(--warning-color); }
-
-        .stat-card-title {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
+        /* Loading indicator */
+        .loading-indicator {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+            z-index: 10000;
+            animation: loading 1.5s infinite;
         }
 
-        .stat-card-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
-        .stat-card-change {
-            font-size: 0.875rem;
-            color: var(--success-color);
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: var(--sidebar-width-collapsed);
+            }
+
+            .sidebar .brand,
+            .sidebar .hamburger-text,
+            .sidebar .nav-link span {
+                opacity: 0;
+                transform: translateX(-10px);
+                width: 0;
+                overflow: hidden;
+            }
+
+            .main-content {
+                margin-left: var(--sidebar-width-collapsed);
+                width: calc(100% - var(--sidebar-width-collapsed));
+            }
+
+            .sidebar-header {
+                padding: 1.5rem 0.75rem;
+                justify-content: center;
+            }
+
+            .sidebar-hamburger {
+                padding: 0 0.75rem 1rem;
+            }
+
+            .hamburger-btn {
+                justify-content: center;
+            }
+
+            .nav-item {
+                margin: 0 0.5rem 0.25rem;
+            }
+
+            .nav-link {
+                padding: 0.75rem;
+                justify-content: center;
+            }
         }
 
-        /* Logout Button */
-        .logout-btn {
-            background: var(--danger-color);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logout-btn:hover {
-            background: #b91c1c;
-            transform: translateY(-1px);
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
+            .mobile-header {
+                display: flex;
+            }
+
             .sidebar {
                 transform: translateX(-100%);
+                width: var(--sidebar-width);
+                top: var(--header-height);
+                height: calc(100vh - var(--header-height));
             }
 
             .sidebar.show {
                 transform: translateX(0);
             }
 
+            .sidebar .brand,
+            .sidebar .hamburger-text,
+            .sidebar .nav-link span {
+                opacity: 1;
+                transform: translateX(0);
+                width: auto;
+                overflow: visible;
+            }
+
+            .sidebar-header {
+                padding: 1.5rem;
+                justify-content: flex-start;
+                display: none;
+            }
+
+            .sidebar-hamburger {
+                padding: 0 1.5rem 1rem;
+            }
+
+            .hamburger-btn {
+                justify-content: flex-start;
+            }
+
+            .nav-item {
+                margin: 0 1rem 0.25rem;
+            }
+
+            .nav-link {
+                padding: 0.75rem 1rem;
+                justify-content: flex-start;
+            }
+
             .main-content {
-                margin-left: 0;
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding-top: var(--header-height);
             }
 
             .content-area {
                 padding: 1rem;
             }
+        }
 
-            .top-navbar {
-                padding: 0 1rem;
+        @media (max-width: 576px) {
+            .content-area {
+                padding: 0.75rem;
+            }
+
+            .mobile-header {
+                padding: 0 0.75rem;
             }
         }
 
@@ -368,157 +525,580 @@
         ::-webkit-scrollbar-thumb {
             background: var(--medium-gray);
             border-radius: 3px;
+            transition: background 0.3s ease;
         }
 
         ::-webkit-scrollbar-thumb:hover {
             background: var(--secondary-color);
         }
 
-        /* Loading animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+        /* Logout Button */
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            gap: 0.75rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .logout-btn:hover {
+            background-color: #fef2f2;
+            color: var(--danger-color);
+            transform: translateX(5px);
+        }
+
+        .sidebar.collapsed .logout-btn {
+            justify-content: center;
+            padding: 0.75rem;
+        }
+
+        .sidebar.collapsed .logout-btn span {
+            opacity: 0;
+            transform: translateX(-10px);
+            width: 0;
+            overflow: hidden;
+        }
+
+        /* Smooth transitions untuk semua elemen */
+        .sidebar * {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Loading state */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
+    <!-- Loading Indicator -->
+    <div class="loading-indicator" id="loadingIndicator"></div>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="brand">Admin Sarpras</div>
+        <button class="mobile-hamburger" id="mobileHamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
+    <div class="sidebar collapsed" id="sidebar">
+        <!-- Header -->
         <div class="sidebar-header">
-            <a class="navbar-brand" href="{{ route('home') }}">
-                <img src="{{ asset('images/logo.webp') }}" alt="Logo">
-                <span class="brand">Admin Sarpras</span>
-            </a>
+            <div class="logo">
+                <i class="fas fa-tools"></i>
+            </div>
+            <span class="brand">Admin Sarpras</span>
         </div>
+
+        <!-- Hamburger Menu -->
+        <div class="sidebar-hamburger">
+            <button class="hamburger-btn" id="sidebarToggle">
+                <i class="fas fa-bars hamburger-icon"></i>
+                <span class="hamburger-text">Menu</span>
+            </button>
+        </div>
+
+        <!-- Navigation -->
         <nav class="sidebar-nav">
             <div class="nav-item">
-                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" data-tooltip="Dashboard" data-route="admin.dashboard">
                     <i class="fas fa-chart-line"></i>
                     <span>Dashboard</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
+                <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" data-tooltip="Pengguna" data-route="admin.users">
                     <i class="fas fa-users"></i>
                     <span>Pengguna</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="{{ route('admin.lokasi.index') }}" class="nav-link {{ request()->routeIs('admin.lokasi.index') ? 'active' : '' }}">
+                <a href="{{ route('admin.lokasi.index') }}" class="nav-link {{ request()->routeIs('admin.lokasi.*') ? 'active' : '' }}" data-tooltip="Lokasi" data-route="admin.lokasi">
                     <i class="fas fa-map-marker-alt"></i>
                     <span>Lokasi</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="{{ route('admin.items.index') }}" class="nav-link {{ request()->routeIs('admin.items.index') ? 'active' : '' }}">
+                <a href="{{ route('admin.items.index') }}" class="nav-link {{ request()->routeIs('admin.items.*') ? 'active' : '' }}" data-tooltip="Sarpras" data-route="admin.items">
                     <i class="fas fa-box"></i>
                     <span>Sarpras</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="{{ route('admin.pengaduan.index') }}" class="nav-link {{ request()->routeIs('admin.pengaduan.index') ? 'active' : '' }}">
-                    <i class="fas fa-exclamation-triangle"></i>
+                <a href="{{ route('admin.pengaduan.index') }}" class="nav-link {{ request()->routeIs('admin.pengaduan.*') ? 'active' : '' }}" data-tooltip="Pengaduan" data-route="admin.pengaduan">
+                    <i class="fas fa-clipboard-list"></i>
                     <span>Pengaduan</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="{{ route('admin.laporan.index') }}" class="nav-link {{ request()->routeIs('admin.laporan.index') ? 'active' : '' }}">
+                <a href="{{ route('admin.temporary.index') }}" class="nav-link {{ request()->routeIs('admin.temporary.*') ? 'active' : '' }}" data-tooltip="Laporan" data-route="admin.temporary">
+                    <i class="fas fa-hourglass-half"></i>
+
+                    <span>Temporary</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{{ route('admin.laporan.index') }}" class="nav-link {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}" data-tooltip="Laporan" data-route="admin.laporan">
                     <i class="fas fa-chart-bar"></i>
                     <span>Laporan</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.settings.index') }}" class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" data-tooltip="Pengaturan" data-route="admin.settings">
                     <i class="fas fa-cog"></i>
                     <span>Pengaturan</span>
                 </a>
             </div>
-            <!-- Logout di sidebar -->
-            <div class="nav-item">
-                <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                            <button type="submit" class="nav-link" style="width: 100%; border: none; background: none; text-align: left;">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>Logout</span>
-                            </button>
-                        </form>
-                    </div>
-                </nav>
-            </div>
 
+            <!-- Logout -->
+            <div class="nav-item">
+                <form action="{{ route('logout') }}" method="POST" class="w-100" id="logoutForm">
+                    @csrf
+                    <button type="submit" class="logout-btn" data-tooltip="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
+        </nav>
+    </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Navigation -->
-        <div class="top-navbar">
-
-
-            <div class="navbar-right">
-
-            </div>
-        </div>
-
         <!-- Content Area -->
-        <div class="content-area">
+        <main class="content-area" id="mainContent">
             @yield('content')
-        </div>
+        </main>
     </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Layout Script -->
     <script>
-        // Sidebar toggle functionality
+        // Sidebar functionality dengan smooth animations
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileHamburger = document.getElementById('mobileHamburger');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const mainContent = document.getElementById('mainContent');
 
-        sidebarToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-        });
+        // State management
+        let currentPage = '{{ request()->route()->getName() }}';
+        let isNavigating = false;
 
-        // Mobile responsiveness
-        function handleResize() {
+        // Fungsi untuk toggle sidebar state
+        function toggleSidebar() {
             if (window.innerWidth <= 768) {
-                sidebar.classList.remove('collapsed');
+                // Mobile behavior
+                if (sidebar.classList.contains('show')) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            } else {
+                // Desktop behavior - toggle collapsed state
+                sidebar.classList.toggle('collapsed');
+                // Simpan state sidebar di localStorage
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
             }
         }
 
-        window.addEventListener('resize', handleResize);
-        handleResize();
+        // Open sidebar pada mobile
+        function openSidebar() {
+            sidebar.classList.add('show');
+            setTimeout(() => {
+                sidebar.style.transform = 'translateX(0)';
+                mobileOverlay.classList.add('active');
+                setTimeout(() => {
+                    mobileOverlay.style.opacity = '1';
+                }, 50);
+            }, 50);
+            document.body.style.overflow = 'hidden';
+        }
 
-        // Mobile menu toggle
-        if (window.innerWidth <= 768) {
-            sidebarToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                sidebar.classList.toggle('show');
-            });
+        // Close sidebar pada mobile
+        function closeSidebar() {
+            sidebar.style.transform = 'translateX(-100%)';
+            mobileOverlay.style.opacity = '0';
+            setTimeout(() => {
+                sidebar.classList.remove('show');
+                mobileOverlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }, 400);
+        }
 
-            document.addEventListener('click', (e) => {
-                if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
-                    sidebar.classList.remove('show');
+        // Update active menu item
+        function updateActiveMenu(routeName) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                const linkRoute = link.getAttribute('data-route');
+                if (linkRoute && routeName.startsWith(linkRoute)) {
+                    link.classList.add('active');
                 }
             });
         }
 
-        // Smooth scrolling for navigation
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                if (this.getAttribute('href') === '#') {
-                    e.preventDefault();
+        // Function to load external CSS
+        function loadCSS(href) {
+            return new Promise((resolve, reject) => {
+                // Check if CSS already exists
+                const existingLink = document.querySelector(`link[href="${href}"]`);
+                if (existingLink) {
+                    resolve();
+                    return;
+                }
+
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = href;
+                link.onload = resolve;
+                link.onerror = reject;
+                document.head.appendChild(link);
+            });
+        }
+
+        // Function to load external JS
+        function loadJS(src) {
+            return new Promise((resolve, reject) => {
+                // Check if JS already exists
+                const existingScript = document.querySelector(`script[src="${src}"]`);
+                if (existingScript) {
+                    resolve();
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.body.appendChild(script);
+            });
+        }
+
+        // Function to execute inline scripts
+        function executeInlineScripts(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const scripts = doc.querySelectorAll('script');
+
+            scripts.forEach(script => {
+                if (script.src) {
+                    // External script
+                    loadJS(script.src).catch(console.error);
+                } else {
+                    // Inline script
+                    try {
+                        // Create new script element
+                        const newScript = document.createElement('script');
+                        newScript.textContent = script.textContent;
+                        document.body.appendChild(newScript);
+                    } catch (error) {
+                        console.error('Error executing inline script:', error);
+                    }
                 }
             });
+        }
+
+        // Function to extract and apply styles
+        function applyStyles(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const styleTags = doc.querySelectorAll('style');
+
+            // Remove existing dynamic styles
+            document.querySelectorAll('style[data-dynamic="true"]').forEach(style => style.remove());
+
+            // Add new styles
+            styleTags.forEach(style => {
+                const newStyle = document.createElement('style');
+                newStyle.setAttribute('data-dynamic', 'true');
+                newStyle.textContent = style.textContent;
+                document.head.appendChild(newStyle);
+            });
+
+            // Handle external CSS from link tags
+            const linkTags = doc.querySelectorAll('link[rel="stylesheet"]');
+            linkTags.forEach(link => {
+                loadCSS(link.href).catch(console.error);
+            });
+        }
+
+        // Initialize common components that might be needed
+        function initializeCommonComponents() {
+            // Re-initialize tooltips if any
+            if (typeof $ !== 'undefined' && $.fn.tooltip) {
+                $('[data-bs-toggle="tooltip"]').tooltip();
+            }
+
+            // Re-initialize fancybox if available
+            if (typeof $ !== 'undefined' && $.fancybox) {
+                $('[data-fancybox]').fancybox({
+                    buttons: [
+                        "zoom",
+                        "close"
+                    ]
+                });
+            }
+
+            // Re-initialize any other common components
+            console.log('Common components re-initialized');
+        }
+
+        // Navigasi dengan AJAX - VERSION FIXED
+        async function navigateTo(url, routeName) {
+            if (isNavigating) return;
+
+            isNavigating = true;
+            loadingIndicator.style.display = 'block';
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Network response was not ok');
+
+                const html = await response.text();
+
+                // Parse HTML response
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContent = doc.querySelector('.content-area').innerHTML;
+                const newTitle = doc.querySelector('title').textContent;
+
+                // Update content dan title
+                mainContent.innerHTML = newContent;
+                document.title = newTitle;
+
+                // Apply styles from the new content (from @push('styles'))
+                applyStyles(html);
+
+                // Execute scripts from the new content (from @push('scripts'))
+                executeInlineScripts(html);
+
+                // Update URL tanpa refresh
+                window.history.pushState({}, '', url);
+
+                // Update active menu
+                currentPage = routeName;
+                updateActiveMenu(routeName);
+
+                // Trigger event untuk scripts yang perlu dijalankan ulang
+                window.dispatchEvent(new Event('content-loaded'));
+
+                // Re-initialize common components
+                initializeCommonComponents();
+
+            } catch (error) {
+                console.error('Navigation error:', error);
+                // Fallback ke navigasi normal
+                window.location.href = url;
+            } finally {
+                loadingIndicator.style.display = 'none';
+                isNavigating = false;
+
+                // Tutup sidebar di mobile setelah navigasi
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
+            }
+        }
+
+        // Enhanced navigation handler untuk semua link
+        function handleNavigation(e) {
+            const link = e.target.closest('a');
+
+            // Skip jika bukan link atau link khusus
+            if (!link ||
+                link.getAttribute('target') === '_blank' ||
+                link.getAttribute('download') ||
+                link.getAttribute('href')?.startsWith('javascript:') ||
+                link.getAttribute('href')?.startsWith('mailto:') ||
+                link.getAttribute('href')?.startsWith('tel:') ||
+                e.ctrlKey || e.metaKey || e.shiftKey) {
+                return;
+            }
+
+            // Skip untuk link logout
+            if (link.closest('form')) {
+                return;
+            }
+
+            const url = link.href;
+            const currentOrigin = window.location.origin;
+
+            // Hanya handle link internal
+            if (url.startsWith(currentOrigin)) {
+                e.preventDefault();
+
+                // Cari route name dari data-route atau dari URL
+                let routeName = link.getAttribute('data-route');
+
+                if (!routeName) {
+                    // Fallback: extract route name dari URL
+                    const path = url.replace(currentOrigin, '');
+                    if (path.includes('/edit') || path.includes('/create') || path.includes('/show')) {
+                        routeName = currentPage; // Tetap di route yang sama untuk edit/create/show
+                    } else {
+                        // Coba extract dari path
+                        const pathParts = path.split('/').filter(part => part);
+                        if (pathParts.length >= 2) {
+                            routeName = `admin.${pathParts[0]}`;
+                        }
+                    }
+                }
+
+                navigateTo(url, routeName || 'admin.dashboard');
+            }
+        }
+
+        // Event listeners
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        mobileHamburger.addEventListener('click', toggleSidebar);
+        mobileOverlay.addEventListener('click', closeSidebar);
+
+        // Handle navigation clicks - SEMUA LINK di sidebar
+        document.addEventListener('click', function(e) {
+            // Handle link di sidebar
+            const sidebarLink = e.target.closest('.sidebar .nav-link');
+            if (sidebarLink && !sidebarLink.classList.contains('logout-btn')) {
+                e.preventDefault();
+                const url = sidebarLink.href;
+                const routeName = sidebarLink.getAttribute('data-route');
+                navigateTo(url, routeName);
+                return;
+            }
+
+            // Handle link di content area (termasuk edit, create, dll)
+            const contentLink = e.target.closest('.content-area a');
+            if (contentLink) {
+                handleNavigation(e);
+            }
         });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function() {
+            // Untuk back/forward, reload page untuk simplicity
+            window.location.reload();
+        });
+
+        // Handle window resize
+        function handleResize() {
+            if (window.innerWidth <= 768) {
+                // Mobile behavior
+                sidebar.classList.remove('collapsed');
+                if (!sidebar.classList.contains('show')) {
+                    closeSidebar();
+                }
+            } else {
+                // Desktop behavior
+                sidebar.classList.remove('show');
+                mobileOverlay.classList.remove('active');
+                mobileOverlay.style.opacity = '0';
+                document.body.style.overflow = 'auto';
+
+                // Restore sidebar state dari localStorage untuk desktop
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (isCollapsed) {
+                    sidebar.classList.add('collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                }
+            }
+
+            // Auto-collapse on medium screens (1200px - 768px)
+            if (window.innerWidth <= 1200 && window.innerWidth > 768) {
+                sidebar.classList.add('collapsed');
+            } else if (window.innerWidth > 1200) {
+                // Di desktop besar, gunakan state yang disimpan user
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (isCollapsed) {
+                    sidebar.classList.add('collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                }
+            }
+        }
+
+        // Initialize
+        window.addEventListener('resize', handleResize);
+
+        // Load saved sidebar state
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                handleResize();
+
+                // Load saved state untuk desktop
+                if (window.innerWidth > 768) {
+                    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                    if (isCollapsed) {
+                        sidebar.classList.add('collapsed');
+                    } else {
+                        sidebar.classList.remove('collapsed');
+                    }
+                }
+
+                // Set current page
+                updateActiveMenu(currentPage);
+
+                // Initialize common components on first load
+                initializeCommonComponents();
+            }, 100);
+        });
+
+        // Enhanced hover effects
+        document.querySelectorAll('.nav-link, .logout-btn, .hamburger-btn').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            });
+
+            link.addEventListener('mouseleave', function() {
+                this.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            });
+        });
+
+        // Event untuk child scripts
+        window.addEventListener('content-loaded', function() {
+            // Re-initialize scripts yang perlu dijalankan ulang
+            if (typeof initializePageScripts === 'function') {
+                initializePageScripts();
+            }
+        });
+
+        // Simpan sidebar state sebelum unload
+        window.addEventListener('beforeunload', function() {
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        });
+
+        // Debug info
+        console.log('Admin Layout loaded successfully');
     </script>
 
+    {{-- Tambahan Scripts dari child view --}}
     @stack('scripts')
 </body>
 </html>

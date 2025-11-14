@@ -23,7 +23,7 @@ class ItemController extends Controller
     {
         $validated = $request->validate([
             'nama_item' => 'required|string|max:255',
-            'keterangan' => 'nullable|string'
+            'deskripsi' => 'nullable|string',
         ]);
 
         Item::create($validated);
@@ -34,7 +34,7 @@ class ItemController extends Controller
     {
 
         $item = Item::findOrFail($id);
-    
+
         return view('admin.items.edit', compact('item'));
     }
 
@@ -42,7 +42,7 @@ class ItemController extends Controller
     {
         $validated = $request->validate([
             'nama_item' => 'required|string|max:255',
-            'keterangan' => 'nullable|string'
+            'deskripsi' => 'nullable|string',
         ]);
 
         $item = Item::findOrFail($id);

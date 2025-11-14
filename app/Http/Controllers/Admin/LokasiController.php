@@ -20,16 +20,20 @@ class LokasiController extends Controller
         return view('admin.lokasi.create');
     }
 
-    public function store(Request $request)
+  public function store(Request $request)
 {
-    $validated = $request->validate([
-        'nama_lokasi' => 'required|string|max:255|unique:lokasi,nama_lokasi',
+    $request->validate([
+        'nama_lokasi' => 'required|string|max:100'
     ]);
 
-    \App\Models\Lokasi::create($validated);
+    Lokasi::create([
+        'nama_lokasi' => $request->nama_lokasi
+    ]);
 
-    return redirect()->route('admin.lokasi.index')->with('success', 'Lokasi baru berhasil ditambahkan.');
+    return redirect()->route('admin.lokasi.index')
+                     ->with('success', 'Lokasi berhasil ditambahkan ✅');
 }
+
 
     public function edit($id)
     {
@@ -39,22 +43,27 @@ class LokasiController extends Controller
     }
 
      // Simpan barang-barang yang dipilih ke lokasi
-    public function update(Request $request, $id)
-    {
-        $lokasi = Lokasi::findOrFail($id);
+public function update(Request $request, Lokasi $lokasi)
+{
+    $request->validate([
+        'nama_lokasi' => 'required|string|max:100',
+        'items' => 'nullable|array',
+        'items.*' => 'exists:items,id_item',
+    ]);
 
-        // Validasi: pastikan ada minimal 1 item dipilih
-        $validated = $request->validate([
-            'items' => 'array',
-            'items.*' => 'exists:items,id_item',
-        ]);
+    // Update nama lokasi
+    $lokasi->update([
+        'nama_lokasi' => $request->nama_lokasi
+    ]);
 
-        // Simpan relasi ke tabel pivot
-        $lokasi->items()->sync($request->items ?? []);
+    // Update many-to-many pivot
+    $lokasi->items()->sync($request->items ?? []);
 
-        return redirect()->route('admin.lokasi.index')
-            ->with('success', 'Barang di lokasi berhasil diperbarui.');
-    }
+    return redirect()->route('admin.lokasi.index')
+        ->with('success', 'Lokasi berhasil diperbarui!');
+}
+
+
 
     public function destroy($id)
     {

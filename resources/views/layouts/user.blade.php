@@ -14,6 +14,51 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
+    {{-- Tambahan CSS dari child view --}}
+    @stack('styles')
+
+    <!-- Brave Performance Fix -->
+    <script>
+        // Force disable heavy effects for Brave
+        if (navigator.brave || /Brave/i.test(navigator.userAgent)) {
+            document.addEventListener('DOMContentLoaded', function() {
+                // Remove all heavy elements immediately
+                const floatingContainer = document.querySelector('.floating-elements');
+                if (floatingContainer) floatingContainer.remove();
+
+                // Disable all backdrop filters
+                document.querySelectorAll('*').forEach(el => {
+                    el.style.backdropFilter = 'none';
+                    el.style.transform = 'none';
+                });
+
+                // Add lightweight styles
+                const lightStyle = document.createElement('style');
+                lightStyle.textContent = `
+                    .glass-card, .navbar, .user-dropdown, .modern-table {
+                        backdrop-filter: none !important;
+                        background: rgba(255, 255, 255, 0.95) !important;
+                    }
+                    .glass-card:hover {
+                        transform: translateY(-2px) !important;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+                    }
+                    .modern-table tbody tr:hover {
+                        transform: none !important;
+                        background: #f8f9fa !important;
+                    }
+                    .floating-elements {
+                        display: none !important;
+                    }
+                    * {
+                        transition: all 0.2s ease !important;
+                    }
+                `;
+                document.head.appendChild(lightStyle);
+            });
+        }
+    </script>
+
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -67,22 +112,21 @@
             overflow-x: hidden;
         }
 
-        /* Enhanced Glassmorphism Navigation */
+        /* SIMPLIFIED Navigation - No heavy effects */
         .navbar {
-            background: rgba(255, 255, 255, 0.1) !important;
-            backdrop-filter: blur(25px);
-            border-bottom: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.98) !important;
+            border-bottom: 1px solid var(--border-color);
             padding: 1rem 0;
             position: sticky;
             top: 0;
             z-index: 1000;
-            transition: all 0.4s ease;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
         }
 
         .navbar-scrolled {
-            background: rgba(255, 255, 255, 0.95) !important;
-            box-shadow: var(--shadow-lg);
-            backdrop-filter: blur(30px);
+            background: rgba(255, 255, 255, 0.98) !important;
+            box-shadow: var(--shadow-md);
         }
 
         .navbar-brand {
@@ -100,12 +144,11 @@
         .navbar-brand img {
             height: 40px;
             width: auto;
-            transition: transform 0.3s ease;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            transition: transform 0.2s ease;
         }
 
         .navbar-brand:hover img {
-            transform: rotate(-5deg) scale(1.1);
+            transform: rotate(-5deg) scale(1.05);
         }
 
         .nav-link {
@@ -113,10 +156,9 @@
             padding: 0.75rem 1.25rem !important;
             margin: 0 0.5rem;
             border-radius: var(--border-radius-sm);
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             font-weight: 500;
             color: var(--text-medium) !important;
-            backdrop-filter: blur(10px);
         }
 
         .nav-link::before {
@@ -125,9 +167,9 @@
             bottom: 0;
             left: 50%;
             width: 0;
-            height: 3px;
-            background: var(--primary-gradient);
-            transition: all 0.3s ease;
+            height: 2px;
+            background: var(--primary-color);
+            transition: all 0.2s ease;
             transform: translateX(-50%);
             border-radius: 2px;
         }
@@ -136,28 +178,24 @@
         .nav-link.active {
             color: var(--primary-color) !important;
             background: rgba(99, 102, 241, 0.08);
-            transform: translateY(-2px);
         }
 
         .nav-link.active::before {
             width: 60%;
         }
 
-        /* Enhanced User Dropdown */
+        /* SIMPLIFIED User Dropdown */
         .user-dropdown {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--border-color);
             border-radius: var(--border-radius-sm);
             padding: 0.5rem 0.75rem;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .user-dropdown:hover {
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(99, 102, 241, 0.05);
             border-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
         }
 
         .user-avatar {
@@ -171,51 +209,62 @@
             color: white;
             font-weight: 700;
             font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        /* User Info in Mobile Menu */
+        .mobile-user-info {
+            display: none;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+
+        .mobile-user-info .user-avatar {
+            width: 50px;
+            height: 50px;
+            margin-right: 1rem;
+        }
+
+        .mobile-user-info .user-details {
+            flex: 1;
+        }
+
+        .mobile-user-info .user-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .mobile-user-info .user-role {
+            font-size: 0.875rem;
+            color: var(--text-light);
         }
 
         /* Main Container */
         .main-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 2.5rem 1.5rem;
+            padding: 2rem 1.5rem;
         }
 
-        /* Enhanced Glassmorphism Cards */
+        /* SIMPLIFIED Cards - No glass effect */
         .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid var(--border-color);
             border-radius: var(--border-radius-md);
             box-shadow: var(--shadow-sm);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.2s ease;
             overflow: hidden;
-            position: relative;
-        }
-
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.7s ease;
-        }
-
-        .glass-card:hover::before {
-            left: 100%;
         }
 
         .glass-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: var(--shadow-xl);
-            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
         }
 
-        /* Modern Button Styles */
+        /* SIMPLIFIED Button Styles */
         .btn-modern {
             padding: 0.875rem 2rem;
             border-radius: var(--border-radius-sm);
@@ -224,67 +273,50 @@
             display: inline-flex;
             align-items: center;
             gap: 0.75rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s ease;
             border: none;
             font-size: 0.95rem;
-        }
-
-        .btn-modern::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .btn-modern:hover::before {
-            left: 100%;
         }
 
         .btn-primary {
             background: var(--primary-gradient);
             color: white;
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
         }
 
         .btn-secondary {
             background: rgba(255, 255, 255, 0.9);
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--border-color);
             color: var(--text-dark);
-            backdrop-filter: blur(10px);
         }
 
         .btn-secondary:hover {
             background: white;
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
-        /* Enhanced Stats Grid */
+        /* SIMPLIFIED Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .stat-card {
-            padding: 2.5rem 2rem;
+            padding: 2rem 1.5rem;
             text-align: center;
             position: relative;
             overflow: hidden;
             border-radius: var(--border-radius-md);
-            backdrop-filter: blur(20px);
+            background: white;
+            box-shadow: var(--shadow-sm);
         }
 
         .stat-card::after {
@@ -293,43 +325,41 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 5px;
+            height: 4px;
             background: var(--primary-gradient);
             border-radius: 2px 2px 0 0;
         }
 
         .stat-value {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 900;
             margin-bottom: 0.5rem;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         .stat-label {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--text-medium);
             margin-bottom: 1rem;
         }
 
-        /* Enhanced Table */
+        /* SIMPLIFIED Table */
         .modern-table {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
+            background: white;
             border-radius: var(--border-radius-md);
             overflow: hidden;
             box-shadow: var(--shadow-sm);
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--border-color);
         }
 
         .modern-table th {
             background: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
             font-weight: 700;
-            padding: 1.5rem;
+            padding: 1.25rem;
             border: none;
             font-size: 0.9rem;
             text-transform: uppercase;
@@ -337,126 +367,102 @@
         }
 
         .modern-table td {
-            padding: 1.25rem 1.5rem;
-            border-color: var(--glass-border);
-            transition: all 0.3s ease;
+            padding: 1rem 1.25rem;
+            border-color: var(--border-color);
+            transition: all 0.2s ease;
             vertical-align: middle;
         }
 
         .modern-table tbody tr {
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .modern-table tbody tr:hover {
-            background: rgba(99, 102, 241, 0.05);
-            transform: translateX(8px);
+            background: rgba(99, 102, 241, 0.03);
         }
 
-        /* Enhanced Badge */
+        /* SIMPLIFIED Badge */
         .badge-modern {
-            padding: 0.6rem 1.2rem;
+            padding: 0.5rem 1rem;
             border-radius: 50px;
             font-weight: 700;
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            backdrop-filter: blur(10px);
         }
-
-        /* New Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-10px) rotate(1deg); }
-            66% { transform: translateY(5px) rotate(-1deg); }
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-            50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.6); }
-        }
-
-        .animate-fadeInUp { animation: fadeInUp 0.8s ease-out; }
-        .animate-slideInLeft { animation: slideInLeft 0.8s ease-out; }
-        .animate-float { animation: float 4s ease-in-out infinite; }
-        .animate-glow { animation: glow 2s ease-in-out infinite; }
 
         /* Progress Bars */
         .progress {
-            height: 8px;
+            height: 6px;
             background: rgba(255, 255, 255, 0.3);
             border-radius: 10px;
             overflow: hidden;
-            backdrop-filter: blur(10px);
         }
 
         .progress-bar {
             border-radius: 10px;
-            transition: width 1.5s ease-in-out;
+            transition: width 0.8s ease-in-out;
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-container {
-                padding: 1.5rem 1rem;
+                padding: 1rem;
             }
 
             .stats-grid {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+                gap: 1rem;
             }
 
             .glass-card {
-                margin-bottom: 1.5rem;
+                margin-bottom: 1rem;
             }
 
             .btn-modern {
                 padding: 0.75rem 1.5rem;
                 font-size: 0.9rem;
             }
+
+            /* Show mobile user info in collapsed menu */
+            .mobile-user-info {
+                display: flex;
+                align-items: center;
+            }
+
+            /* Hide desktop user dropdown in mobile */
+            .navbar .dropdown:not(.mobile-dropdown) {
+                display: none;
+            }
+
+            /* Disable all transforms on mobile */
+            .glass-card:hover {
+                transform: none;
+            }
         }
 
-        /* Custom Scrollbar */
+        @media (min-width: 769px) {
+            /* Hide mobile user info on desktop */
+            .mobile-user-info {
+                display: none !important;
+            }
+        }
+
+        /* Custom Scrollbar - Simplified */
         ::-webkit-scrollbar {
-            width: 10px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
             background: var(--background);
-            border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--primary-gradient);
-            border-radius: 10px;
+            background: var(--primary-color);
+            border-radius: 3px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-
-        /* Floating Background Elements */
+        /* Floating Background Elements - REMOVED in Brave */
         .floating-elements {
             position: fixed;
             top: 0;
@@ -498,6 +504,44 @@
             left: 20%;
             animation-delay: 4s;
         }
+
+        /* Brave-specific optimizations - DISABLE EVERYTHING */
+        @media all and (-webkit-brave: true) {
+            .floating-elements {
+                display: none !important;
+            }
+
+            .glass-card, .navbar, .user-dropdown, .modern-table {
+                backdrop-filter: none !important;
+                background: white !important;
+            }
+
+            .glass-card:hover {
+                transform: translateY(-2px) !important;
+            }
+
+            .modern-table tbody tr:hover {
+                transform: none !important;
+            }
+
+            * {
+                transition: all 0.1s ease !important;
+                animation: none !important;
+            }
+        }
+
+        /* Low performance device detection */
+        .lightweight-mode .floating-elements {
+            display: none !important;
+        }
+
+        .lightweight-mode .glass-card {
+            transition: none;
+        }
+
+        .lightweight-mode .glass-card:hover {
+            transform: none;
+        }
     </style>
 </head>
 <body>
@@ -521,6 +565,17 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Mobile User Info (Visible only in hamburger menu) -->
+                <div class="mobile-user-info d-lg-none">
+                    <div class="user-avatar">
+                        {{ substr(Auth::user()->name, 0, 1) }}
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">{{ Auth::user()->name }}</div>
+                        <div class="user-role">Pengguna Terdaftar</div>
+                    </div>
+                </div>
+
                 <ul class="navbar-nav ms-auto me-4">
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">
@@ -542,18 +597,19 @@
                     </li>
                 </ul>
 
-                <div class="dropdown">
+                <!-- Desktop User Dropdown (Hidden on mobile) -->
+                <div class="dropdown d-none d-lg-block">
                     <div class="user-dropdown d-flex align-items-center gap-2" data-bs-toggle="dropdown">
                         <div class="user-avatar">
                             {{ substr(Auth::user()->name, 0, 1) }}
                         </div>
-                        <div class="d-none d-md-block">
+                        <div>
                             <div style="font-weight: 600;">{{ Auth::user()->name }}</div>
                             <div style="font-size: 0.875rem; color: var(--text-light);">Pengguna Terdaftar</div>
                         </div>
                         <i data-lucide="chevron-down" style="width: 16px; height: 16px;"></i>
                     </div>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="border-radius: var(--border-radius-sm); border: 1px solid var(--glass-border); backdrop-filter: blur(20px);">
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); background: white;">
                         <li><a class="dropdown-item" href="{{ route('profile.index') }}"><i data-lucide="user"></i>Profil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
@@ -561,6 +617,27 @@
                                 @csrf
                                 <button class="dropdown-item text-danger" type="submit">
                                     <i data-lucide="log-out"></i>Keluar
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Mobile Menu Items (Visible only in hamburger menu) -->
+                <div class="d-lg-none mt-3">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('profile.index') ? 'active' : '' }}" href="{{ route('profile.index') }}">
+                                <i data-lucide="user"></i>
+                                Profil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button class="nav-link text-danger w-100 text-start border-0 bg-transparent" type="submit" style="font-weight: 500;">
+                                    <i data-lucide="log-out"></i>
+                                    Keluar
                                 </button>
                             </form>
                         </li>
@@ -581,77 +658,61 @@
         // Initialize Lucide Icons
         lucide.createIcons();
 
-        // Enhanced Navbar scroll effect
+        // SIMPLIFIED Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 30) {
+            if (window.scrollY > 10) {
                 navbar.classList.add('navbar-scrolled');
             } else {
                 navbar.classList.remove('navbar-scrolled');
             }
         });
 
-        // Enhanced animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+        // DISABLE complex animations for Brave
+        const isBrave = navigator.brave || /Brave/i.test(navigator.userAgent);
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0) scale(1)';
-                    entry.target.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                }
+        if (!isBrave) {
+            // Simple fade in for cards
+            document.querySelectorAll('.glass-card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+
+                setTimeout(() => {
+                    card.style.transition = 'all 0.4s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
             });
-        }, observerOptions);
-
-        // Observe all elements for animation
-        document.querySelectorAll('.glass-card').forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(50px) scale(0.95)';
-            observer.observe(card);
-        });
-
-        // Add ripple effect to buttons
-        document.querySelectorAll('.btn-modern').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const ripple = document.createElement('span');
-                const rect = button.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left - size / 2;
-                const y = e.clientY - rect.top - size / 2;
-
-                ripple.style.cssText = `
-                    position: absolute;
-                    border-radius: 50%;
-                    background: rgba(255, 255, 255, 0.6);
-                    transform: scale(0);
-                    animation: ripple 0.6s linear;
-                    width: ${size}px;
-                    height: ${size}px;
-                    left: ${x}px;
-                    top: ${y}px;
-                `;
-
-                button.appendChild(ripple);
-
-                setTimeout(() => ripple.remove(), 600);
+        } else {
+            // Skip all animations for Brave
+            document.querySelectorAll('.glass-card').forEach(card => {
+                card.style.opacity = '1';
+                card.style.transform = 'none';
             });
-        });
 
-        // Add CSS for ripple animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ripple {
-                to {
-                    transform: scale(4);
-                    opacity: 0;
-                }
+            // Remove floating elements completely
+            document.querySelector('.floating-elements')?.remove();
+        }
+
+        // Simple hover effects (disabled for Brave)
+        if (!isBrave) {
+            document.querySelectorAll('.btn-modern').forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        }
+
+        // Force lightweight mode if still laggy
+        setTimeout(() => {
+            if (isBrave) {
+                document.documentElement.classList.add('lightweight-mode');
+                console.log('Lightweight mode activated for Brave');
             }
-        `;
-        document.head.appendChild(style);
+        }, 1000);
     </script>
 
     @stack('scripts')

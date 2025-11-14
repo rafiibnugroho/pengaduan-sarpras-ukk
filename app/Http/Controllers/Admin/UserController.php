@@ -41,16 +41,33 @@ class UserController extends Controller
         return view('admin.user.edit', compact('user'));
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $id)
+    {
         $user = User::findOrFail($id);
-        $data = $request->all();
-        if($request->password){
-            $data['password'] = bcrypt($request->password);
+
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,'.$id,
+            'role'  => 'required|in:admin,petugas,pengguna',
+            'password' => 'nullable|min:6',
+        ]);
+
+        if ($request->filled('password')) {
+            $validated['password'] = bcrypt($request->password);
         } else {
-            unset($data['password']);
+            unset($validated['password']);
         }
-        $user->update($data);
-        return redirect()->route('admin.user.index')->with('success','User berhasil diupdate');
+
+        $user->update($validated);
+
+        return redirect()->route('admin.users.index')
+                        ->with('success', 'User berhasil diperbarui!');
+    }
+
+
+    public function show($id) {
+        $user = User::findOrFail($id);
+        return view('admin.user.show', compact('user'));
     }
 
     public function destroy($id) {

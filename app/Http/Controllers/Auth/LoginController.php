@@ -29,6 +29,7 @@ class LoginController extends Controller
     protected $redirectTo = '/home';
 
 
+
     protected function authenticated(Request $request, $user)
 {
     if ($user->role === 'admin') {

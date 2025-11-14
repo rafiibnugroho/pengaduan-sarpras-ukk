@@ -66,7 +66,7 @@ class GoogleController extends Controller
             ]);
 
             Auth::login($newUser, true);
-            return redirect()->intended('/dashboard')
+            return redirect()->intended('/home')
                 ->with('success', 'Account created successfully! Welcome to our platform.');
 
         } catch (Exception $e) {

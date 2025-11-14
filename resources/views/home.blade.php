@@ -3,179 +3,183 @@
 @section('title', 'Dashboard - ' . config('app.name'))
 
 @section('content')
-    <!-- Hero Welcome Section -->
-    <div class="glass-card mb-5 animate-fadeInUp">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <div class="p-5">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-4">
-                            <i data-lucide="sparkles" class="text-primary" style="width: 32px; height: 32px;"></i>
-                        </div>
-                        <div>
-                            <h1 class="display-5 fw-bold text-gradient mb-2">
-                                Selamat Datang, <span class="text-primary">{{ Auth::user()->name }}</span>! 👋
-                            </h1>
-
+<div class="container-fluid py-4">
+    <!-- Modern Welcome Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="modern-welcome-card rounded-4 p-5 position-relative overflow-hidden">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <div class="d-flex align-items-start">
+                           
+                            <div class="flex-grow-1">
+                                <h1 class="display-6 fw-bold text-dark mb-2">
+                                    Selamat Datang, <span class="text-primary">{{ Auth::user()->name }}</span>
+                                </h1>
+                                <p class="lead text-muted mb-4">
+                                    Sistem Pengaduan Sarana & Prasarana SMKN 1 BANTUL.
+                                    Laporkan masalah infrastruktur dengan mudah dan pantau progress secara real-time.
+                                </p>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <a href="{{ route('pengaduan.create') }}"
+                                       class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
+                                        <i class="fas fa-plus-circle me-2"></i>
+                                        Buat Laporan Baru
+                                    </a>
+                                    <a href="{{ route('pengaduan.index') }}"
+                                       class="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold">
+                                        <i class="fas fa-history me-2"></i>
+                                        Lihat Riwayat
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <p class="lead text-muted mb-4">
-                        Selamat datang di <strong class="text-primary">Sistem Pengaduan Sarana & Prasarana Digital SMKN 1 BANTUL</strong>.
-                        Laporkan masalah infrastruktur dengan mudah dan pantau progressnya secara real-time.
-                    </p>
-
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="{{ route('pengaduan.create') }}"
-                           class="btn-modern btn-primary animate-float">
-                            <i data-lucide="plus-circle" class="me-2"></i>
-                            Buat Laporan Baru
-                        </a>
-                        <a href="{{ route('pengaduan.index') }}"
-                           class="btn-modern btn-secondary">
-                            <i data-lucide="clock" class="me-2"></i>
-                            Lihat Riwayat
-                        </a>
+                    <div class="col-lg-4 d-none d-lg-block">
+                        <div class="text-center">
+                            <div class="floating-graphic">
+                                <i class="fas fa-clipboard-check fa-5x text-primary opacity-25"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-4 d-none d-lg-block">
-                <div class="text-center p-4">
-                    <div class="position-relative">
-                        <div class="floating-element" style="width: 200px; height: 200px; background: var(--primary-gradient); opacity: 0.1; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
-                        <i data-lucide="shield-check" class="text-primary" style="width: 120px; height: 120px; position: relative; z-index: 2;"></i>
-                    </div>
+                <div class="welcome-decoration">
+                    <div class="decoration-shape shape-1"></div>
+                    <div class="decoration-shape shape-2"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Enhanced Statistics Cards -->
-    <div class="stats-grid animate-fadeInUp" style="animation-delay: 0.1s;">
-        <div class="glass-card stat-card" style="border-left: 4px solid var(--success);">
-            <div class="stat-value text-success">{{ $stats['selesai'] ?? 0 }}</div>
-            <div class="stat-label">Laporan Selesai</div>
-            <i data-lucide="check-circle" class="text-success mt-3" style="width: 40px; height: 40px;"></i>
-            <div class="progress mt-3">
-                <div class="progress-bar bg-success" style="width: {{ ($stats['selesai'] ?? 0) / max(($stats['total'] ?? 1), 1) * 100 }}%"></div>
-            </div>
-        </div>
+    <!-- Minimal Statistics Cards -->
+    <div class="row mb-4">
+        @php
+            $statsData = [
+                ['label' => 'Selesai', 'value' => $stats['selesai'] ?? 0, 'icon' => 'fas fa-check-circle', 'color' => 'success', 'progress' => ($stats['selesai'] ?? 0) / max(($stats['total'] ?? 1), 1) * 100],
+                ['label' => 'Diproses', 'value' => $stats['proses'] ?? 0, 'icon' => 'fas fa-cogs', 'color' => 'warning', 'progress' => ($stats['proses'] ?? 0) / max(($stats['total'] ?? 1), 1) * 100],
+                ['label' => 'Diajukan', 'value' => $stats['diajukan'] ?? 0, 'icon' => 'fas fa-clock', 'color' => 'primary', 'progress' => ($stats['diajukan'] ?? 0) / max(($stats['total'] ?? 1), 1) * 100],
+                ['label' => 'Total', 'value' => $stats['total'] ?? 0, 'icon' => 'fas fa-file-alt', 'color' => 'dark', 'progress' => 100],
+            ];
+        @endphp
 
-        <div class="glass-card stat-card" style="border-left: 4px solid var(--warning);">
-            <div class="stat-value text-warning">{{ $stats['proses'] ?? 0 }}</div>
-            <div class="stat-label">Sedang Diproses</div>
-            <i data-lucide="clock" class="text-warning mt-3" style="width: 40px; height: 40px;"></i>
-            <div class="progress mt-3">
-                <div class="progress-bar bg-warning" style="width: {{ ($stats['proses'] ?? 0) / max(($stats['total'] ?? 1), 1) * 100 }}%"></div>
+        @foreach($statsData as $stat)
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card-modern bg-white border-0 rounded-3 p-4 h-100 position-relative overflow-hidden">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon-modern bg-{{ $stat['color'] }}-subtle rounded-3 p-3 me-3">
+                        <i class="{{ $stat['icon'] }} fs-4 text-{{ $stat['color'] }}"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h3 class="fw-bold mb-1 display-6">{{ $stat['value'] }}</h3>
+                        <p class="text-muted mb-0 fw-semibold">{{ $stat['label'] }}</p>
+                    </div>
+                </div>
+                <div class="stat-progress-modern mb-2">
+                    <div class="progress-bar-modern bg-{{ $stat['color'] }}" style="width: {{ $stat['progress'] }}%"></div>
+                </div>
+                <small class="text-muted">{{ $stat['progress'] }}% dari total</small>
+                <div class="stat-decoration bg-{{ $stat['color'] }}-subtle"></div>
             </div>
         </div>
-
-        <div class="glass-card stat-card" style="border-left: 4px solid var(--primary-color);">
-            <div class="stat-value text-primary">{{ $stats['diajukan'] ?? 0 }}</div>
-            <div class="stat-label">Menunggu Review</div>
-            <i data-lucide="send" class="text-primary mt-3" style="width: 40px; height: 40px;"></i>
-            <div class="progress mt-3">
-                <div class="progress-bar bg-primary" style="width: {{ ($stats['diajukan'] ?? 0) / max(($stats['total'] ?? 1), 1) * 100 }}%"></div>
-            </div>
-        </div>
-
-        <div class="glass-card stat-card" style="border-left: 4px solid var(--dark);">
-            <div class="stat-value text-dark">{{ $stats['total'] ?? 0 }}</div>
-            <div class="stat-label">Total Laporan</div>
-            <i data-lucide="file-text" class="text-dark mt-3" style="width: 40px; height: 40px;"></i>
-            <div class="progress mt-3">
-                <div class="progress-bar bg-dark" style="width: 100%"></div>
-            </div>
-        </div>
+        @endforeach
     </div>
 
-    <div class="row mt-4">
-        <!-- Recent Reports -->
+    <!-- Main Content Area -->
+    <div class="row">
+        <!-- Recent Reports - Modern Table -->
         <div class="col-lg-8 mb-4">
-            <div class="glass-card animate-slideInLeft">
-                <div class="card-header border-0 bg-transparent p-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
-                                <i data-lucide="file-text" class="text-primary" style="width: 24px; height: 24px;"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-1 fw-bold">Laporan Terbaru</h5>
-                                <p class="text-muted mb-0">Pantau status laporan Anda terkini</p>
-                            </div>
-                        </div>
-                        <a href="{{ route('pengaduan.index') }}" class="btn-modern btn-secondary btn-sm">
-                            Lihat Semua
-                            <i data-lucide="arrow-right" class="ms-1"></i>
-                        </a>
+            <div class="card modern-card border-0 rounded-4">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-3">
+                    <div>
+                        <h5 class="card-title fw-bold mb-1 fs-5">
+                            <i class="fas fa-history text-primary me-2"></i>
+                            Laporan Terbaru
+                        </h5>
+                        <p class="text-muted mb-0">Pantau status laporan Anda terkini</p>
                     </div>
+                    <a href="{{ route('pengaduan.index') }}" class="btn btn-outline-primary rounded-pill px-3 py-2">
+                        Lihat Semua
+                        <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table modern-table table-hover mb-0">
-                            <thead>
+                    <div class="modern-table-container">
+                        <table class="table modern-table mb-0">
+                            <thead class="modern-table-header">
                                 <tr>
-                                    <th>ID Laporan</th>
-                                    <th>Judul Pengaduan</th>
-                                    <th>Status</th>
-                                    <th>Tanggal</th>
-                                    <th>Aksi</th>
+                                    <th class="ps-4">ID</th>
+                                    <th>Pengaduan</th>
+                                    <th>Lokasi</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Tanggal</th>
+                                    <th class="text-center pe-4">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="modern-table-body">
                                 @forelse($recentReports as $report)
-                                    <tr>
-                                        <td>
-                                            <code class="bg-light px-2 py-1 rounded">#{{ str_pad($report->id_pengaduan, 4, '0', STR_PAD_LEFT) }}</code>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                <div class="fw-semibold">{{ Str::limit($report->nama_pengaduan, 35) }}</div>
-                                               @if($report->lokasi)
-                                                    <small class="text-muted">
-                                                        <i data-lucide="map-pin" class="me-1" style="width: 12px; height: 12px;"></i>
-                                                        {{ Str::limit($report->lokasi->nama_lokasi ?? '-', 25) }}
-                                                    </small>
-                                                @endif
+                                <tr class="modern-table-row">
+                                    <td class="ps-4">
+                                        <div class="id-badge-modern">
+                                            <span class="id-prefix">#</span>
+                                            <span class="id-number">{{ str_pad($report->id_pengaduan, 4, '0', STR_PAD_LEFT) }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="complaint-info-modern">
+                                            <div class="complaint-title-modern fw-semibold">{{ Str::limit($report->nama_pengaduan, 40) }}</div>
+                                            <div class="complaint-desc-modern text-muted small">{{ Str::limit($report->deskripsi, 60) }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="location-info-modern">
+                                            <div class="location-text-modern small">
+                                                <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                                {{ Str::limit($report->lokasi->nama_lokasi ?? '-', 25) }}
                                             </div>
-                                        </td>
-                                        <td>
-                                            @php
-                                                $statusConfig = [
-                                                    'Selesai' => ['class' => 'bg-success', 'icon' => 'check-circle', 'color' => 'success'],
-                                                    'Diproses' => ['class' => 'bg-warning', 'icon' => 'clock', 'color' => 'warning'],
-                                                    'Ditolak' => ['class' => 'bg-danger', 'icon' => 'x-circle', 'color' => 'danger'],
-                                                    'Diajukan' => ['class' => 'bg-primary', 'icon' => 'send', 'color' => 'primary'],
-                                                ];
-                                                $config = $statusConfig[$report->status] ?? ['class' => 'bg-primary', 'icon' => 'help-circle', 'color' => 'primary'];
-                                            @endphp
-                                            <span class="badge badge-modern bg-{{ $config['color'] }}-light text-{{ $config['color'] }}">
-                                                <i data-lucide="{{ $config['icon'] }}" class="me-1" style="width: 12px; height: 12px;"></i>
-                                                {{ $report->status }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="fw-semibold">{{ $report->created_at->format('d M Y') }}</div>
-                                            <small class="text-muted">{{ $report->created_at->format('H:i') }}</small>
-                                        </td>
-                                        <td>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="status-badge-modern status-{{ strtolower($report->status) }}">
+                                            <i class="status-icon
+                                                @if($report->status == 'Selesai') fas fa-check-circle
+                                                @elseif($report->status == 'Diproses') fas fa-cogs
+                                                @elseif($report->status == 'Ditolak') fas fa-times-circle
+                                                @else fas fa-clock @endif me-1">
+                                            </i>
+                                            {{ $report->status }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="date-info-modern">
+                                            <div class="date-day fw-semibold">{{ $report->created_at->format('d M') }}</div>
+                                            <div class="date-time text-muted small">{{ $report->created_at->format('H:i') }}</div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center pe-4">
+                                        <div class="action-buttons-modern">
                                             <a href="{{ route('pengaduan.show', $report->id_pengaduan) }}"
-                                               class="btn btn-outline-primary btn-sm">
-                                                <i data-lucide="eye" class="me-1" style="width: 12px; height: 12px;"></i>
-                                                Detail
+                                               class="btn-action-view-modern"
+                                               title="Lihat Detail">
+                                                <i class="fas fa-eye"></i>
                                             </a>
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </td>
+                                </tr>
                                 @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center py-5">
-                                            <div class="text-muted">
-                                                <i data-lucide="inbox" class="mb-3" style="width: 48px; height: 48px; opacity: 0.5;"></i>
-                                                <p class="fw-semibold mb-1">Belum ada laporan</p>
-                                                <p class="mb-0">Buat laporan pertama Anda untuk memulai</p>
+                                <tr>
+                                    <td colspan="6" class="text-center py-5">
+                                        <div class="empty-state-modern">
+                                            <div class="empty-icon-modern">
+                                                <i class="fas fa-inbox fa-4x"></i>
                                             </div>
-                                        </td>
-                                    </tr>
+                                            <h4 class="empty-title-modern">Belum ada laporan</h4>
+                                            <p class="empty-description-modern">Buat laporan pertama Anda untuk memulai</p>
+                                            <a href="{{ route('pengaduan.create') }}" class="btn btn-primary rounded-pill px-4 py-2">
+                                                <i class="fas fa-plus me-2"></i>Buat Laporan
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -184,493 +188,709 @@
             </div>
         </div>
 
-
-        <!-- Quick Actions & Progress -->
+        <!-- Sidebar - Quick Actions -->
         <div class="col-lg-4">
             <!-- Quick Actions -->
-            <div class="glass-card mb-4 animate-slideInLeft" style="animation-delay: 0.2s;">
+            <div class="card modern-card border-0 rounded-4 mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-4">
-                        <div class="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
-                            <i data-lucide="zap" class="text-primary" style="width: 24px; height: 24px;"></i>
+                        <div class="quick-action-icon bg-primary bg-opacity-10 rounded-3 p-2 me-3">
+                            <i class="fas fa-bolt text-primary"></i>
                         </div>
                         <div>
                             <h6 class="fw-bold mb-1">Akses Cepat</h6>
-                            <p class="text-muted mb-0 small">Akses fitur utama dengan mudah</p>
+                            <p class="text-muted mb-0 small">Fitur utama yang sering digunakan</p>
                         </div>
                     </div>
 
-                    <div class="d-grid gap-3">
-                        <a href="{{ route('pengaduan.create') }}" class="d-flex align-items-center p-3 text-decoration-none rounded-3 bg-light-hover">
-                            <div class="bg-success bg-opacity-10 p-2 rounded me-3">
-                                <i data-lucide="plus-circle" class="text-success" style="width: 20px; height: 20px;"></i>
+                    <div class="quick-actions-list">
+                        <a href="{{ route('pengaduan.create') }}" class="quick-action-item">
+                            <div class="action-icon bg-success bg-opacity-10 rounded-2 p-2">
+                                <i class="fas fa-plus-circle text-success"></i>
                             </div>
-                            <div class="flex-grow-1">
-                                <div class="fw-semibold">Buat Laporan Baru</div>
-                                <div class="text-muted small">Laporkan masalah infrastruktur</div>
+                            <div class="action-content">
+                                <div class="action-title fw-semibold">Buat Laporan Baru</div>
+                                <div class="action-desc text-muted small">Laporkan masalah infrastruktur</div>
                             </div>
-                            <i data-lucide="chevron-right" class="text-muted" style="width: 16px; height: 16px;"></i>
+                            <div class="action-arrow">
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
                         </a>
 
-                        <a href="{{ route('pengaduan.index') }}" class="d-flex align-items-center p-3 text-decoration-none rounded-3 bg-light-hover">
-                                                        <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
-                                <i data-lucide="file-text" class="text-primary" style="width: 20px; height: 20px;"></i>
+                        <a href="{{ route('pengaduan.index') }}" class="quick-action-item">
+                            <div class="action-icon bg-primary bg-opacity-10 rounded-2 p-2">
+                                <i class="fas fa-file-alt text-primary"></i>
                             </div>
-                            <div class="flex-grow-1">
-                                <div class="fw-semibold">Riwayat Laporan</div>
-                                <div class="text-muted small">Lihat semua laporan Anda</div>
+                            <div class="action-content">
+                                <div class="action-title fw-semibold">Riwayat Laporan</div>
+                                <div class="action-desc text-muted small">Lihat semua laporan Anda</div>
                             </div>
-                            <i data-lucide="chevron-right" class="text-muted" style="width: 16px; height: 16px;"></i>
+                            <div class="action-arrow">
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
                         </a>
 
-                        <a href="#" class="d-flex align-items-center p-3 text-decoration-none rounded-3 bg-light-hover">
-                            <div class="bg-info bg-opacity-10 p-2 rounded me-3">
-                                <i data-lucide="help-circle" class="text-info" style="width: 20px; height: 20px;"></i>
+                        <a href="{{ route('profile.index') }}" class="quick-action-item">
+                            <div class="action-icon bg-info bg-opacity-10 rounded-2 p-2">
+                                <i class="fas fa-user-cog text-info"></i>
                             </div>
-                            <div class="flex-grow-1">
-                                <div class="fw-semibold">Panduan</div>
-                                <div class="text-muted small">Cara membuat laporan</div>
+                            <div class="action-content">
+                                <div class="action-title fw-semibold">Profile</div>
+                                <div class="action-desc text-muted small">Atur akun Anda</div>
                             </div>
-                            <i data-lucide="chevron-right" class="text-muted" style="width: 16px; height: 16px;"></i>
+                            <div class="action-arrow">
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
                         </a>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- Progress Summary -->
-            <div class="glass-card animate-slideInLeft" style="animation-delay: 0.4s;">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="bg-success bg-opacity-10 p-2 rounded-circle me-3">
-                            <i data-lucide="trending-up" class="text-success" style="width: 24px; height: 24px;"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold mb-1">Ringkasan Progress</h6>
-                            <p class="text-muted mb-0 small">Status pengaduan Anda</p>
-                        </div>
-                    </div>
-
-                    @php
-                        $total = max(($stats['total'] ?? 0), 1);
-                        $selesaiPct = round((($stats['selesai'] ?? 0) / $total) * 100);
-                        $prosesPct = round((($stats['proses'] ?? 0) / $total) * 100);
-                        $diajukanPct = round((($stats['diajukan'] ?? 0) / $total) * 100);
-                    @endphp
-
-                    <div class="space-y-4">
-                        @foreach([
-                            ['color' => 'success', 'icon' => 'check-circle', 'label' => 'Selesai', 'value' => $selesaiPct, 'count' => $stats['selesai'] ?? 0],
-                            ['color' => 'warning', 'icon' => 'clock', 'label' => 'Diproses', 'value' => $prosesPct, 'count' => $stats['proses'] ?? 0],
-                            ['color' => 'primary', 'icon' => 'send', 'label' => 'Diajukan', 'value' => $diajukanPct, 'count' => $stats['diajukan'] ?? 0]
-                        ] as $item)
-                            <div class="progress-item">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="fw-semibold">
-                                        <i data-lucide="{{ $item['icon'] }}" class="me-2 text-{{ $item['color'] }}" style="width: 16px; height: 16px;"></i>
-                                        {{ $item['label'] }}
-                                    </span>
-                                    <span class="fw-bold text-{{ $item['color'] }}">{{ $item['value'] }}%</span>
-                                </div>
-                                <div class="progress" style="height: 8px;">
-                                    <div class="progress-bar bg-{{ $item['color'] }}"
-                                         style="width: {{ $item['value'] }}%"
-                                         role="progressbar"
-                                         data-value="{{ $item['value'] }}">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center mt-1">
-                                    <small class="text-muted">{{ $item['count'] }} laporan</small>
-                                    <small class="fw-semibold text-{{ $item['color'] }}">{{ $item['value'] }}%</small>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <!-- Overall Progress Circle -->
-                    <div class="text-center mt-4 pt-3 border-top">
-                        <div class="position-relative d-inline-block">
-                            <svg width="80" height="80" class="progress-circle">
-                                <circle cx="40" cy="40" r="35" stroke="#e9ecef" stroke-width="6" fill="none"/>
-                                <circle cx="40" cy="40" r="35" stroke="#10b981" stroke-width="6" fill="none"
-                                        stroke-dasharray="220"
-                                        stroke-dashoffset="{{ 220 - (220 * $selesaiPct / 100) }}"
-                                        stroke-linecap="round" transform="rotate(-90 40 40)"/>
-                            </svg>
-                            <div class="position-absolute top-50 start-50 translate-middle">
-                                <span class="fw-bold text-success">{{ $selesaiPct }}%</span>
-                            </div>
-                        </div>
-                        <p class="small text-muted mt-2 mb-0">Tingkat Penyelesaian</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- aktivitas terbaru yang di tutup sementara
-    <!-- Activity Timeline -->
+    <!-- Tips Section - Modern -->
     <div class="row mt-4">
         <div class="col-12">
-            <div class="glass-card animate-fadeInUp" style="animation-delay: 0.6s;">
-                <div class="card-header border-0 bg-transparent p-4">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-info bg-opacity-10 p-2 rounded-circle me-3">
-                            <i data-lucide="activity" class="text-info" style="width: 24px; height: 24px;"></i>
-                        </div>
-                        <div>
-                            <h5 class="mb-1 fw-bold">Aktivitas Terkini</h5>
-                            <p class="text-muted mb-0">Riwayat aktivitas laporan Anda</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="timeline">
-                        @forelse($recentReports->take(3) as $activity)
-                            <div class="timeline-item">
-                                <div class="timeline-marker">
-                                    <i data-lucide="circle" class="text-primary" style="width: 12px; height: 12px;"></i>
-                                </div>
-                                <div class="timeline-content">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="fw-semibold">Laporan #{{ str_pad($activity->id_pengaduan, 4, '0', STR_PAD_LEFT) }}</span>
-                                        <small class="text-muted">{{ $activity->updated_at->diffForHumans() }}</small>
+            <div class="card modern-card border-0 rounded-4">
+                <div class="card-body p-5">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h5 class="fw-bold mb-4 text-dark">
+                                <i class="fas fa-lightbulb text-warning me-2"></i>
+                                Tips Untuk Anda
+                            </h5>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="tips-icon bg-success bg-opacity-10 rounded-2 p-2 me-3">
+                                            <i class="fas fa-camera text-success"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-semibold mb-2">Foto yang Jelas</h6>
+                                            <p class="text-muted small mb-0">Pastikan foto menunjukkan kerusakan dengan jelas dan terang</p>
+                                        </div>
                                     </div>
-                                    <p class="mb-1">{{ $activity->nama_pengaduan }}</p>
-                                    <span class="badge bg-{{ $statusConfig[$activity->status]['color'] ?? 'primary' }}-light text-{{ $statusConfig[$activity->status]['color'] ?? 'primary' }}">
-                                        Status: {{ $activity->status }}
-                                    </span>
                                 </div>
-                            </div>
-                        @empty
-                            <div class="text-center py-4">
-                                <i data-lucide="activity" class="text-muted mb-3" style="width: 48px; height: 48px; opacity: 0.5;"></i>
-                                <p class="text-muted mb-0">Belum ada aktivitas terbaru</p>
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    --}}
-
-    <!-- Enhanced Tips Section -->
-    <div class="glass-card mt-4 animate-fadeInUp" style="animation-delay: 0.8s;">
-        <div class="card-body p-5">
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <h5 class="fw-bold mb-4">💡 Tips & Best Practices</h5>
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-start">
-                                <div class="bg-success bg-opacity-10 p-3 rounded-circle me-4">
-                                    <i data-lucide="camera" class="text-success" style="width: 20px; height: 20px;"></i>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="tips-icon bg-primary bg-opacity-10 rounded-2 p-2 me-3">
+                                            <i class="fas fa-map-marker-alt text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-semibold mb-2">Lokasi Spesifik</h6>
+                                            <p class="text-muted small mb-0">Tentukan lokasi kerusakan dengan tepat</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h6 class="fw-semibold mb-2">Foto yang Jelas</h6>
-                                    <p class="text-muted small mb-0">Pastikan foto menunjukkan kerusakan dengan jelas dari berbagai angle</p>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="tips-icon bg-info bg-opacity-10 rounded-2 p-2 me-3">
+                                            <i class="fas fa-file-alt text-info"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-semibold mb-2">Deskripsi Detail</h6>
+                                            <p class="text-muted small mb-0">Jelaskan kronologi dan dampak kerusakan</p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-start">
-                                <div class="bg-warning bg-opacity-10 p-3 rounded-circle me-4">
-                                    <i data-lucide="map-pin" class="text-warning" style="width: 20px; height: 20px;"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-semibold mb-2">Lokasi Spesifik</h6>
-                                    <p class="text-muted small mb-0">Sebutkan ruangan, lantai, dan landmark sekitar</p>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <div class="tips-icon bg-warning bg-opacity-10 rounded-2 p-2 me-3">
+                                            <i class="fas fa-sync-alt text-warning"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-semibold mb-2">Pantau Berkala</h6>
+                                            <p class="text-muted small mb-0">Cek status laporan secara rutin</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-start">
-                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-4">
-                                    <i data-lucide="file-text" class="text-primary" style="width: 20px; height: 20px;"></i>
+                        <div class="col-lg-4 text-center">
+                            <div class="operational-info">
+                                <div class="operational-icon bg-primary bg-opacity-10 rounded-3 p-3 d-inline-block mb-3">
+                                    <i class="fas fa-clock fa-2x text-primary"></i>
                                 </div>
-                                <div>
-                                    <h6 class="fw-semibold mb-2">Deskripsi Detail</h6>
-                                    <p class="text-muted small mb-0">Jelaskan kronologi dan dampak kerusakan secara rinci</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-start">
-                                <div class="bg-info bg-opacity-10 p-3 rounded-circle me-4">
-                                    <i data-lucide="refresh-cw" class="text-info" style="width: 20px; height: 20px;"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-semibold mb-2">Pantau Berkala</h6>
-                                    <p class="text-muted small mb-0">Cek status laporan secara rutin untuk update terbaru</p>
+                                <h6 class="fw-semibold mb-2">Waktu Operasional</h6>
+                                <p class="text-muted small mb-3">Tim kami siap membantu Anda</p>
+                                <div class="operational-time bg-light rounded-3 p-3">
+                                    <div class="fw-semibold text-primary">Senin - Jumat</div>
+                                    <div class="text-muted small">08:00 - 16:00 WIB</div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 text-center">
-                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
-                            <i data-lucide="clock" class="text-primary" style="width: 32px; height: 32px;"></i>
-                        </div>
-                        <h6 class="fw-semibold mb-2">Waktu Operasional</h6>
-                        <p class="small text-muted mb-3">Tim kami siap membantu Anda</p>
-                        <div class="bg-light p-3 rounded-3">
-                            <div class="fw-semibold text-primary">Senin - Jumat</div>
-                            <div class="text-muted small">08:00 - 16:00 WIB</div>
-                        </div>
-                        <div class="mt-3">
-                            <small class="text-muted">Response time: 1-2 jam kerja</small>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    {{--
-    <!-- Emergency Contact -->
-    <div class="glass-card mt-4 animate-fadeInUp" style="animation-delay: 1s;">
-        <div class="card-body text-center p-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="bg-danger bg-opacity-10 p-4 rounded-4 border border-danger border-2">
-                        <i data-lucide="alert-triangle" class="text-danger mb-3" style="width: 48px; height: 48px;"></i>
-                        <h5 class="fw-bold text-danger mb-3">Darurat?</h5>
-                        <p class="text-muted mb-4">Untuk kerusakan yang membahayakan atau memerlukan penanganan segera</p>
-                        <div class="d-flex justify-content-center gap-3 flex-wrap">
-                            <a href="tel:+62123456789" class="btn btn-danger btn-modern">
-                                <i data-lucide="phone" class="me-2"></i>
-                                Hubungi Darurat
-                            </a>
-                            <a href="mailto:emergency@smkn1bantul.sch.id" class="btn btn-outline-danger btn-modern">
-                                <i data-lucide="mail" class="me-2"></i>
-                                Email Darurat
-                            </a>
-                        </div>
-                    </div>
-                    --}}
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
-
-@push('styles')
 <style>
-    /* Enhanced Timeline */
-    .timeline {
-        position: relative;
-        padding-left: 2rem;
+/* Modern Variables */
+:root {
+    --primary-color: #3B82F6;
+    --success-color: #10B981;
+    --warning-color: #F59E0B;
+    --danger-color: #EF4444;
+    --dark-color: #374151;
+    --border-radius: 12px;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Modern Welcome Card */
+.modern-welcome-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-avatar {
+    transition: all 0.3s ease;
+}
+
+.modern-welcome-card:hover .welcome-avatar {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.welcome-decoration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.decoration-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.shape-1 {
+    width: 120px;
+    height: 120px;
+    top: -40px;
+    right: -40px;
+}
+
+.shape-2 {
+    width: 80px;
+    height: 80px;
+    top: 50%;
+    right: 20%;
+}
+
+.floating-graphic {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+/* Modern Cards */
+.modern-card {
+    background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Modern Stat Cards */
+.stat-card-modern {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card-modern:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-icon-modern {
+    transition: all 0.3s ease;
+}
+
+.stat-card-modern:hover .stat-icon-modern {
+    transform: scale(1.1);
+}
+
+.stat-progress-modern {
+    height: 6px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar-modern {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+.stat-decoration {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    opacity: 0.1;
+}
+
+/* Modern Table */
+.modern-table-container {
+    overflow: hidden;
+    border-radius: var(--border-radius);
+}
+
+.modern-table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.modern-table-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.modern-table-header th {
+    border: none;
+    padding: 1.25rem 0.75rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--dark-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.modern-table-body td {
+    border: none;
+    padding: 1.25rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.modern-table-row {
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.modern-table-row:hover {
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+    transform: translateX(4px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Table Elements */
+.id-badge-modern {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+}
+
+.id-prefix {
+    color: #6B7280;
+    font-weight: 600;
+}
+
+.id-number {
+    color: var(--dark-color);
+}
+
+.complaint-info-modern {
+    min-width: 0;
+    max-width: 280px;
+}
+
+.complaint-title-modern {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    color: var(--dark-color);
+    line-height: 1.4;
+}
+
+.complaint-desc-modern {
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.location-info-modern {
+    min-width: 0;
+}
+
+.location-text-modern {
+    font-size: 0.8rem;
+    color: #6B7280;
+}
+
+.date-info-modern {
+    text-align: center;
+}
+
+.date-day {
+    font-size: 0.9rem;
+    color: var(--dark-color);
+}
+
+.date-time {
+    font-size: 0.75rem;
+}
+
+/* Status Badges */
+.status-badge-modern {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 100px;
+    justify-content: center;
+}
+
+.status-selesai {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-diproses {
+    background: rgba(245, 158, 11, 0.1);
+    color: #D97706;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-diajukan {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563EB;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.status-ditolak {
+    background: rgba(239, 68, 68, 0.1);
+    color: #DC2626;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Action Buttons */
+.action-buttons-modern {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-action-view-modern {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-action-view-modern:hover {
+    background: #3B82F6;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Quick Actions */
+.quick-actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.quick-action-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--border-radius);
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.quick-action-item:hover {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(59, 130, 246, 0.2);
+    transform: translateX(5px);
+    text-decoration: none;
+    color: inherit;
+}
+
+.action-icon {
+    transition: all 0.3s ease;
+}
+
+.quick-action-item:hover .action-icon {
+    transform: scale(1.1);
+}
+
+.action-content {
+    flex: 1;
+    margin: 0 1rem;
+}
+
+.action-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.125rem;
+}
+
+.action-desc {
+    font-size: 0.75rem;
+}
+
+.action-arrow {
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: all 0.3s ease;
+}
+
+.quick-action-item:hover .action-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Empty State */
+.empty-state-modern {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.empty-icon-modern {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: #3B82F6;
+}
+
+.empty-title-modern {
+    font-weight: 700;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.empty-description-modern {
+    color: #6B7280;
+    margin-bottom: 1.5rem;
+}
+
+/* Tips Section */
+.tips-icon {
+    transition: all 0.3s ease;
+}
+
+.d-flex:hover .tips-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.operational-info {
+    padding: 1rem;
+}
+
+.operational-time {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Background Colors */
+.bg-primary-subtle { background-color: rgba(59, 130, 246, 0.1) !important; }
+.bg-success-subtle { background-color: rgba(16, 185, 129, 0.1) !important; }
+.bg-warning-subtle { background-color: rgba(245, 158, 11, 0.1) !important; }
+.bg-info-subtle { background-color: rgba(33, 150, 243, 0.1) !important; }
+.bg-dark-subtle { background-color: rgba(55, 65, 81, 0.1) !important; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem;
     }
 
-    .timeline::before {
-        content: '';
-        position: absolute;
-        left: 15px;
-        top: 0;
-        bottom: 0;
-        width: 2px;
-        background: var(--primary-gradient);
-        opacity: 0.3;
+    .modern-welcome-card {
+        padding: 2rem 1.5rem;
+        text-align: center;
     }
 
-    .timeline-item {
-        position: relative;
-        margin-bottom: 2rem;
-        display: flex;
-        align-items: flex-start;
+    .modern-welcome-card .d-flex {
+        flex-direction: column;
     }
 
-    .timeline-marker {
-        position: absolute;
-        left: -2rem;
-        top: 0.25rem;
-        background: white;
-        border-radius: 50%;
-        padding: 0.25rem;
+    .welcome-avatar {
+        margin: 0 auto 1rem;
     }
 
-    .timeline-content {
-        flex: 1;
-        background: rgba(255, 255, 255, 0.5);
-        padding: 1rem 1.5rem;
-        border-radius: var(--border-radius-sm);
-        border-left: 3px solid var(--primary-color);
+    .modern-table-header {
+        display: none;
     }
 
-    /* Progress Circle */
-    .progress-circle {
-        transform: rotate(-90deg);
-    }
-
-    .progress-circle circle {
-        transition: stroke-dashoffset 1.5s ease-in-out;
-    }
-
-    /* Hover Effects */
-    .bg-light-hover {
-        transition: all 0.3s ease;
-        border: 1px solid transparent;
-    }
-
-    .bg-light-hover:hover {
-        background: rgba(255, 255, 255, 0.8) !important;
-        border-color: var(--glass-border);
-        transform: translateX(5px);
+    .modern-table-row {
+        display: block;
+        margin-bottom: 1rem;
+        border-radius: var(--border-radius);
         box-shadow: var(--shadow-sm);
     }
 
-    /* Progress Items */
-    .progress-item {
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: var(--border-radius-sm);
+    .modern-table-row td {
+        display: block;
+        text-align: left;
+        border: none;
+        padding: 0.75rem 1rem;
+        position: relative;
+    }
+
+    .modern-table-row td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-right: 0.5rem;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+
+    .action-buttons-modern {
+        justify-content: flex-start;
+    }
+
+    .card-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    /* Responsive data labels */
+    .modern-table-row td:nth-child(1)::before { content: "ID: "; }
+    .modern-table-row td:nth-child(2)::before { content: "Pengaduan: "; }
+    .modern-table-row td:nth-child(3)::before { content: "Lokasi: "; }
+    .modern-table-row td:nth-child(4)::before { content: "Status: "; }
+    .modern-table-row td:nth-child(5)::before { content: "Tanggal: "; }
+    .modern-table-row td:nth-child(6)::before { content: "Aksi: "; }
+}
+
+@media (max-width: 576px) {
+    .stat-card-modern {
+        text-align: center;
+    }
+
+    .stat-card-modern .d-flex {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .stat-card-modern .me-3 {
+        margin-right: 0 !important;
         margin-bottom: 1rem;
-        transition: all 0.3s ease;
     }
 
-    .progress-item:hover {
-        background: rgba(255, 255, 255, 0.5);
-        transform: translateY(-2px);
+    .quick-action-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .timeline {
-            padding-left: 1.5rem;
-        }
-
-        .timeline-marker {
-            left: -1.5rem;
-        }
-
-        .timeline-content {
-            padding: 1rem;
-        }
+    .action-content {
+        margin: 0.5rem 0;
     }
+
+    .action-arrow {
+        display: none;
+    }
+}
 </style>
-@endpush
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Enhanced progress bar animation
-        const progressBars = document.querySelectorAll('.progress-bar');
-        progressBars.forEach(bar => {
-            const width = bar.style.width;
-            bar.style.width = '0';
-            setTimeout(() => {
-                bar.style.width = width;
-                bar.style.transition = 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
-            }, 300);
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate progress bars
+    const progressBars = document.querySelectorAll('.progress-bar-modern');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => {
+            bar.style.width = width;
+            bar.style.transition = 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        }, 300);
+    });
+
+    // Add smooth animations to cards
+    const cards = document.querySelectorAll('.modern-card, .stat-card-modern');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.6s ease';
+
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+
+    // Table row animations
+    const tableRows = document.querySelectorAll('.modern-table-row');
+    tableRows.forEach((row, index) => {
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-20px)';
+        row.style.transition = 'all 0.5s ease';
+
+        setTimeout(() => {
+            row.style.opacity = '1';
+            row.style.transform = 'translateX(0)';
+        }, index * 100);
+    });
+
+    // Hover effects for stat cards
+    const statCards = document.querySelectorAll('.stat-card-modern');
+    statCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px)';
         });
-
-        // Progress circle animation
-        const progressCircles = document.querySelectorAll('.progress-circle circle');
-        progressCircles.forEach(circle => {
-            const dashoffset = circle.style.strokeDashoffset;
-            circle.style.strokeDashoffset = '220';
-            setTimeout(() => {
-                circle.style.strokeDashoffset = dashoffset;
-                circle.style.transition = 'stroke-dashoffset 2s ease-in-out';
-            }, 500);
-        });
-
-        // Enhanced hover effects for cards
-        const cards = document.querySelectorAll('.glass-card');
-        cards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px) scale(1.02)';
-                this.style.boxShadow = '0 25px 50px -12px rgba(0,0,0,0.3)';
-            });
-
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-                this.style.boxShadow = 'var(--shadow-sm)';
-            });
-        });
-
-        // Ripple effect for buttons
-        document.querySelectorAll('.btn-modern').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const ripple = document.createElement('span');
-                const rect = button.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left - size / 2;
-                const y = e.clientY - rect.top - size / 2;
-
-                ripple.style.cssText = `
-                    position: absolute;
-                    border-radius: 50%;
-                    background: rgba(255, 255, 255, 0.6);
-                    transform: scale(0);
-                    animation: ripple 0.6s linear;
-                    width: ${size}px;
-                    height: ${size}px;
-                    left: ${x}px;
-                    top: ${y}px;
-                `;
-
-                button.style.position = 'relative';
-                button.style.overflow = 'hidden';
-                button.appendChild(ripple);
-
-                setTimeout(() => ripple.remove(), 600);
-            });
-        });
-
-        // Add CSS for ripple animation
-        if (!document.querySelector('#ripple-style')) {
-            const style = document.createElement('style');
-            style.id = 'ripple-style';
-            style.textContent = `
-                @keyframes ripple {
-                    to {
-                        transform: scale(4);
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        // Auto-refresh stats every 30 seconds
-        setInterval(() => {
-            fetch('{{ route('home.stats') }}')
-                .then(response => response.json())
-                .then(data => {
-                    // Update stats cards
-                    document.querySelectorAll('.stat-value').forEach((element, index) => {
-                        const values = [data.selesai, data.proses, data.diajukan, data.total];
-                        if (values[index] !== undefined) {
-                            element.textContent = values[index];
-                        }
-                    });
-                })
-                .catch(error => console.log('Auto-refresh error:', error));
-        }, 30000);
-
-        // Scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                    entry.target.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.animate-fadeInUp, .animate-slideInLeft').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            observer.observe(el);
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(-5px)';
         });
     });
+
+    // Auto-refresh stats (optional)
+    setInterval(() => {
+        // You can implement auto-refresh here if needed
+    }, 30000);
+});
 </script>
 @endpush
+
+@endsection

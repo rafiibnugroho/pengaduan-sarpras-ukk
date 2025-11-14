@@ -8,7 +8,26 @@ class HomeController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except(['landing']); // kecualikan landing dari auth
+    }
+
+    /**
+     * Landing page untuk user pertama kali
+     */
+    public function landing()
+    {
+        // Jika user sudah login, redirect ke home sesuai role
+        if (auth()->check()) {
+            if (auth()->user()->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            } elseif (auth()->user()->role === 'petugas') {
+                return redirect()->route('petugas.dashboard');
+            } else {
+                return redirect()->route('home');
+            }
+        }
+
+        return view('landing');
     }
 
     public function index()
