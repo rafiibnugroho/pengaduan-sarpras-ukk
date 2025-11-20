@@ -20,7 +20,7 @@ Aplikasi pengaduan sarpras berbasis web untuk melaporkan kerusakan fasilitas, me
 | Backend | Laravel |
 | Frontend | Blade / Bootstrap / Tailwind |
 | Database | MySQL |
-| Hosting (opsional) | cPanel / Shared Hosting |
+| Hosting | cPanel / Shared Hosting |
 
 ---
 
